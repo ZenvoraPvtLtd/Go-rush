@@ -1,17 +1,26 @@
 "use client";
-
-import React, { useState } from 'react';
-
-// MOCK DATA for Customers
-const customersList = [
-  { id: "C-901", name: "Ananya Pandey", phone: "+91 9123456780", rides: 24, rating: 4.8, status: "ACTIVE" },
-  { id: "C-902", name: "Rajat Kapoor", phone: "+91 9123456781", rides: 5, rating: 3.5, status: "ACTIVE" },
-  { id: "C-903", name: "Sneha Reddy", phone: "+91 9123456782", rides: 0, rating: 0, status: "NEW" },
-  { id: "C-904", name: "Mohit Jain", phone: "+91 9123456783", rides: 12, rating: 1.2, status: "SUSPENDED" },
-];
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [customersList, setCustomersList] = useState<any[]>([]);
+
+  useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/admin/users`)
+      .then(res => {
+        const formatted = res.data.map((u: any) => ({
+          id: u.id,
+          name: u.name,
+          phone: u.phone,
+          rides: Math.floor(Math.random() * 20), // Mocked for now
+          rating: 4.5, // Mocked for now
+          status: 'ACTIVE'
+        }));
+        setCustomersList(formatted);
+      })
+      .catch(console.error);
+  }, []);
 
   const filteredCustomers = customersList.filter(customer => 
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

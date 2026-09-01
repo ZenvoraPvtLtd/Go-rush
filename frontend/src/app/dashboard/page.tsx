@@ -1,15 +1,25 @@
-import React from 'react';
+'use client';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import RecentRidesTable from '../components/RecentRidesTable'; // 1. Ye nayi line humne add ki hai
 
-// MOCK DATA 
-const kpiData = [
-  { title: "Total Active Rides", value: "142", trend: "+12%", status: "success" },
-  { title: "Online Drivers", value: "89", trend: "-3%", status: "danger" },
-  { title: "Today's Revenue", value: "₹45,200", trend: "+8%", status: "success" },
-  { title: "Pending KYC", value: "12", trend: "Needs Review", status: "warning" }
-];
-
 export default function DashboardPage() {
+  const [stats, setStats] = useState({ activeRides: 0, totalDrivers: 0, totalRevenue: 0, totalUsers: 0 });
+
+  useEffect(() => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/admin/stats`)
+      .then(res => setStats(res.data))
+      .catch(console.error);
+  }, []);
+
+  // MOCK DATA merged with LIVE DATA
+  const kpiData = [
+    { title: "Total Active Rides", value: stats.activeRides.toString(), trend: "Live", status: "success" },
+    { title: "Total Drivers", value: stats.totalDrivers.toString(), trend: "Live", status: "brand" },
+    { title: "Total Revenue", value: `₹${stats.totalRevenue}`, trend: "Live", status: "success" },
+    { title: "Total Users", value: stats.totalUsers.toString(), trend: "Live", status: "warning" }
+  ];
+
   return (
     <div className="space-y-6">
       

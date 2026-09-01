@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  phone           String   @unique
+  password        String
+  profileImageUrl String?
+  otpCode         String?
+  otpExpiry       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  rides           Ride[]
+}
+
+model Driver {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  phone           String   @unique
+  password        String
+  vehicleDetails  String?
+  status          String   @default("OFFLINE") // ONLINE, OFFLINE, BUSY
+  lat             Float?
+  lng             Float?
+  profileImageUrl String?
+  licenseImageUrl String?
+  isKycApproved   Boolean  @default(false)
+  otpCode         String?
+  otpExpiry       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  rides           Ride[]
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ride {
+  id                 String   @id @default(uuid())
+  riderId            String
+  driverId           String?
+  pickupLat          Float
+  pickupLng          Float
+  dropoffLat         Float
+  dropoffLng         Float
+  status             String   @default("REQUESTED") // REQUESTED, SEARCHING, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
+  fare               Float?
+  paymentStatus      String   @default("PENDING") // PENDING, PAID, FAILED
+  paymentId          String?
+  cancellationReason String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  rider              User     @relation(fields: [riderId], references: [id])
+  driver             Driver?  @relation(fields: [driverId], references: [id])
+}

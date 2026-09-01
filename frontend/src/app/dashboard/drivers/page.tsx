@@ -1,19 +1,32 @@
 "use client";
-
-import React, { useState } from 'react';
-
-// MOCK DATA: Isko baad mein GET /v1/admin/drivers API se replace kiya jayega
-const driversList = [
-  { id: "D-101", name: "Ramesh Yadav", phone: "+91 9876543210", vehicle: "Tata Nexon (EV)", status: "ONLINE", kyc: "VERIFIED" },
-  { id: "D-102", name: "Suresh Kumar", phone: "+91 9876543211", vehicle: "Maruti Dzire", status: "OFFLINE", kyc: "VERIFIED" },
-  { id: "D-103", name: "Vikash Singh", phone: "+91 9876543212", vehicle: "Honda Amaze", status: "PENDING", kyc: "PENDING" },
-  { id: "D-104", name: "Anil Sharma", phone: "+91 9876543213", vehicle: "Hyundai Aura", status: "BLOCKED", kyc: "REJECTED" },
-];
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function DriversPage() {
   // State for filtering
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [driversList, setDriversList] = useState<any[]>([]);
+
+  const fetchDrivers = () => {
+    axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/admin/drivers`)
+      .then(res => {
+        const formatted = res.data.map((d: any) => ({
+          id: d.id,
+          name: d.name,
+          phone: d.phone,
+          vehicle: d.vehicleDetails || 'Not specified',
+          status: d.status,
+          kyc: d.isKycApproved ? 'VERIFIED' : 'PENDING'
+        }));
+        setDriversList(formatted);
+      })
+      .catch(console.error);
+  };
+
+  useEffect(() => {
+    fetchDrivers();
+  }, []);
 
   // Filtering Logic
   const filteredDrivers = driversList.filter(driver => {
