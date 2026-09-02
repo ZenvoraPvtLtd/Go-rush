@@ -9,11 +9,25 @@ export default function LoginPage() {
 
   const router = useRouter(); 
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault(); 
-    console.log("Login attempt for:", email, password);
-
-    router.push("/dashboard");
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.access_token);
+        router.push('/dashboard');
+      } else {
+        alert('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login failed', error);
+      alert('Login error');
+    }
   };
 
   return (
