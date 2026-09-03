@@ -8,6 +8,7 @@
 7. **Notification Providers Blocked:** External providers for Push, SMS, and Email are not authorized or configured. Live notifications are BLOCKED.
 8. **Operational Support Policies Undefined:** SLAs, Refund logic, Partner Penalties, and Case Categories are pending Business Decisions. Support Enforcement is BLOCKED.
 9. **Fraud & Risk Intelligence Blocked:** No ML Provider, IP Intelligence, or Auto-Enforcement Rules have been authorized. Live Fraud Blocking is BLOCKED.
+10. **KYC & Partner Compliance Blocked:** No Cloud Storage, KYC Provider, or Legal Document Requirements have been configured. Live Partner Onboarding is BLOCKED.
 
 ## P1 — Major Blockers
 1. **Missing Secrets Management:** Vault / AWS Secrets Manager has not been configured.
