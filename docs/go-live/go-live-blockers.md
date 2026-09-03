@@ -5,6 +5,7 @@
 4. **Payment Gateway Blocked:** No Payment Provider (Stripe/Razorpay) has been officially authorized or configured. Financial validations are BLOCKED.
 5. **Partner Payout Blocked:** Commission rates, Payout Gateways, and Minimum Settlement policies are completely undefined. Partner payouts are BLOCKED.
 6. **Service Quality Rules Undefined:** The Rating Scale, Quality Enforcement Thresholds, and Review Moderation logic are pending Business Decisions. Quality operations are BLOCKED.
+7. **Notification Providers Blocked:** External providers for Push, SMS, and Email are not authorized or configured. Live notifications are BLOCKED.
 
 ## P1 — Major Blockers
 1. **Missing Secrets Management:** Vault / AWS Secrets Manager has not been configured.
