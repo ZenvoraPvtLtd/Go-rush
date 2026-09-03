@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PricingContext, PricingRule, BaseFareRule, DistanceFareRule, BookingFeeRule } from './pricing-rules';
-import { FareBreakdown, FareComponent } from '../domain/quote';
-import { Money } from '../domain/money';
+import { PricingContext, PricingRule, BaseFareRule, DistanceFareRule, BookingFeeRule } from './pricing-rules.js';
+import { FareBreakdown, FareComponent } from '../domain/quote.js';
+import { Money } from '../domain/money.js';
 
 @Injectable()
 export class PricingEngine {

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { PlacesController } from './presentation/places.controller';
-import { PlacesService } from './application/places.service';
+import { PlacesController } from './presentation/places.controller.js';
+import { PlacesService } from './application/places.service.js';
 
 @Module({
   controllers: [PlacesController],

@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Ride, RideStatus } from '../../ride/domain/ride';
-import { RideService } from '../../ride/application/ride.service';
-import { DriverEligibilityPolicy } from './driver-eligibility.policy';
-import { DriverRankingPolicy } from './driver-ranking.policy';
-import { MockDriverLocationProvider } from '../infrastructure/mock-driver-location.provider';
-import { DriverOffer, DriverOfferStatus } from '../domain/driver-offer';
-import { DriverOfferStateMachine } from '../domain/driver-offer-state-machine';
+import { Ride, RideStatus } from '../../ride/domain/ride.js';
+import { RideService } from '../../ride/application/ride.service.js';
+import { DriverEligibilityPolicy } from './driver-eligibility.policy.js';
+import { DriverRankingPolicy } from './driver-ranking.policy.js';
+import { MockDriverLocationProvider } from '../infrastructure/mock-driver-location.provider.js';
+import { DriverOffer, DriverOfferStatus } from '../domain/driver-offer.js';
+import { DriverOfferStateMachine } from '../domain/driver-offer-state-machine.js';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -38,7 +38,7 @@ export class DispatchEngine {
       );
 
       // 2. Filter Eligibility
-      const eligible = candidates.filter(c => {
+      const eligible = candidates.filter((c: any) => {
         const result = this.eligibilityPolicy.evaluate(c.driver, ride.quoteSnapshot.rideCategory.code);
         return result.isEligible;
       });

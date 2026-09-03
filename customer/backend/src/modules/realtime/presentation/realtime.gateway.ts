@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { LocationIngestionService } from '../application/location-ingestion.service';
-import { RedisLocationStore } from '../infrastructure/redis-location-store';
-import { DriverLocationPayload } from '../domain/location-payload';
+import { LocationIngestionService } from '../application/location-ingestion.service.js';
+import { RedisLocationStore } from '../infrastructure/redis-location-store.js';
+import { DriverLocationPayload } from '../domain/location-payload.js';
 
 /**
  * Structural abstraction for a NestJS WebSocketGateway.

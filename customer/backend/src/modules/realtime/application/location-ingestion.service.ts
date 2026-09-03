@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DriverLocationPayload } from '../domain/location-payload';
-import { LocationSanityPolicy } from '../domain/location-sanity-policy';
+import { DriverLocationPayload } from '../domain/location-payload.js';
+import { LocationSanityPolicy } from '../domain/location-sanity-policy.js';
 
 @Injectable()
 export class LocationIngestionService {

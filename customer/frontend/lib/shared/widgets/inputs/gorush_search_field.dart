@@ -9,11 +9,11 @@ class GoRushSearchField extends StatelessWidget {
   final bool readOnly;
 
   const GoRushSearchField({
-    Key? key,
+    super.key,
     required this.hintText,
     this.onTap,
     this.readOnly = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

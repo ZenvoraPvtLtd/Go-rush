@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../core/pricing/domain/quote_models.dart';
 import '../../../core/pricing/data/quote_repository.dart';
 import '../../../core/ride/data/ride_repository.dart';
-import '../../../shared/theme/gorush_colors.dart';
-import '../../../shared/theme/gorush_typography.dart';
-import '../../../shared/theme/gorush_spacing.dart';
+import '../../../shared/theme/colors.dart';
+import '../../../shared/theme/typography.dart';
+import '../../../shared/theme/tokens.dart';
 import 'fare_breakdown_sheet.dart';
 import '../../ride/presentation/ride_status_screen.dart';
+import '../../../core/realtime/application/realtime_service.dart';
 
 class VehicleSelectionSheet extends StatefulWidget {
   final QuoteRepository quoteRepository;
@@ -15,11 +16,11 @@ class VehicleSelectionSheet extends StatefulWidget {
   final VoidCallback onConfirm;
 
   const VehicleSelectionSheet({
-    Key? key,
+    super.key,
     required this.quoteRepository,
     required this.rideRepository,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   State<VehicleSelectionSheet> createState() => _VehicleSelectionSheetState();
@@ -168,7 +169,7 @@ class _VehicleSelectionSheetState extends State<VehicleSelectionSheet> {
               child: Text(_error!, style: GoRushTypography.body1.copyWith(color: GoRushColors.error)),
             )
           else
-            ..._quotes.map((quote) => _buildQuoteTile(quote)).toList(),
+            ..._quotes.map((quote) => _buildQuoteTile(quote)),
           
           if (_isExpired)
             Padding(
@@ -233,7 +234,7 @@ class _VehicleSelectionSheetState extends State<VehicleSelectionSheet> {
                   Text(
                     '${(quote.durationSeconds / 60).ceil()} mins away • ${quote.rideCategory.capacity} 👤',
                     style: GoRushTypography.body2.copyWith(
-                      color: isSelected ? GoRushColors.onPrimaryContainer.withOpacity(0.8) : GoRushColors.onSurfaceVariant,
+                      color: isSelected ? GoRushColors.onPrimaryContainer.withValues(alpha: 0.8) : GoRushColors.onSurfaceVariant,
                     ),
                   ),
                 ],

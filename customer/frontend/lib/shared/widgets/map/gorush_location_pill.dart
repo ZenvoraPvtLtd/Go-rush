@@ -6,7 +6,7 @@ import '../../theme/typography.dart';
 class GoRushLocationPill extends StatelessWidget {
   final VoidCallback onTap;
 
-  const GoRushLocationPill({Key? key, required this.onTap}) : super(key: key);
+  const GoRushLocationPill({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

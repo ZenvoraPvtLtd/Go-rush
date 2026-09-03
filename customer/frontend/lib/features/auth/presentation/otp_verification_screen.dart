@@ -9,7 +9,7 @@ import '../../../shared/widgets/buttons/gorush_button.dart';
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
 
-  const OtpVerificationScreen({Key? key, required this.phoneNumber}) : super(key: key);
+  const OtpVerificationScreen({super.key, required this.phoneNumber});
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -181,7 +181,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               SizedBox(
                 width: double.infinity,
                 child: GoRushButton(
-                  text: 'Verify',
+                  label: 'Verify',
                   isLoading: _isLoading,
                   onPressed: _verifyOtp,
                 ),

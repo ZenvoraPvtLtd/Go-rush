@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Param, Body, Headers, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { RideService } from '../application/ride.service';
+import { RideService } from '../application/ride.service.js';
 
 @Controller('v1/rides')
 export class RideController {

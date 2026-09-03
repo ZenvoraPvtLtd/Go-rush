@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DriverLocationPayload } from '../domain/location-payload';
+import { DriverLocationPayload } from '../domain/location-payload.js';
 
 @Injectable()
 export class RedisLocationStore {

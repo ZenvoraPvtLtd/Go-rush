@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../core/pricing/domain/quote_models.dart';
-import '../../../shared/theme/gorush_colors.dart';
-import '../../../shared/theme/gorush_typography.dart';
-import '../../../shared/theme/gorush_spacing.dart';
+import '../../../shared/theme/colors.dart';
+import '../../../shared/theme/typography.dart';
+import '../../../shared/theme/tokens.dart';
 
 class FareBreakdownSheet extends StatelessWidget {
   final Quote quote;
 
-  const FareBreakdownSheet({Key? key, required this.quote}) : super(key: key);
+  const FareBreakdownSheet({super.key, required this.quote});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class FareBreakdownSheet extends StatelessWidget {
                 ],
               ),
             );
-          }).toList(),
+          }),
           const Divider(height: GoRushSpacing.xl),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

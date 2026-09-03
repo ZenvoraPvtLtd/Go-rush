@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { RideShareSession, RideShareStatus, RideShareStateMachine } from '../domain/ride-share-session';
-import { WhatsAppMessagingProvider, MockWhatsAppProvider } from './whatsapp-messaging-provider';
+import { RideShareSession, RideShareStatus, RideShareStateMachine } from '../domain/ride-share-session.js';
+import { WhatsAppMessagingProvider, MockWhatsAppProvider } from './whatsapp-messaging-provider.js';
 
 @Injectable()
 export class ShareSessionService {

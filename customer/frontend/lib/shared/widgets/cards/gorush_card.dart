@@ -7,10 +7,10 @@ class GoRushCard extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const GoRushCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding = const EdgeInsets.all(GoRushSpacing.md),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

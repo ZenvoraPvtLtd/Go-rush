@@ -1,5 +1,5 @@
 import { Injectable, Inject, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { OtpProvider, OTP_PROVIDER_TOKEN, AuthResponse, SendOtpDto, VerifyOtpDto, RefreshDto } from '../domain/auth.types';
+import { OtpProvider, OTP_PROVIDER_TOKEN, AuthResponse, SendOtpDto, VerifyOtpDto, RefreshDto } from '../domain/auth.types.js';
 
 @Injectable()
 export class AuthService {

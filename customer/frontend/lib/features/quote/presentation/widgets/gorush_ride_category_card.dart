@@ -13,14 +13,14 @@ class GoRushRideCategoryCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const GoRushRideCategoryCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.capacity,
     required this.eta,
     required this.fare,
     this.isSelected = false,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

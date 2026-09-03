@@ -25,4 +25,12 @@ class GoRushColors {
   static const Color safety = Color(0xFFDC2626); // Strong red for safety SOS features
   
   static const Color overlay = Color(0x660F172A);
+
+  // Aliases for compatibility
+  static const Color onPrimary = Color(0xFFFFFFFF);
+  static const Color surfaceVariant = Color(0xFFF1F5F9);
+  static const Color onSurfaceVariant = Color(0xFF475569);
+  static const Color primaryContainer = Color(0xFFE2E8F0);
+  static const Color onPrimaryContainer = Color(0xFF0F172A);
+  static const Color onSurface = Color(0xFF0F172A);
 }

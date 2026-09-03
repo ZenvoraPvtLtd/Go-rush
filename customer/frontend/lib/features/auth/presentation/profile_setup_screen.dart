@@ -6,7 +6,7 @@ import '../../../shared/theme/typography.dart';
 import '../../../shared/widgets/buttons/gorush_button.dart';
 
 class ProfileSetupScreen extends StatefulWidget {
-  const ProfileSetupScreen({Key? key}) : super(key: key);
+  const ProfileSetupScreen({super.key});
 
   @override
   State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
@@ -107,7 +107,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               SizedBox(
                 width: double.infinity,
                 child: GoRushButton(
-                  text: 'Save & Continue',
+                  label: 'Save & Continue',
                   isLoading: _isLoading,
                   onPressed: _saveProfile,
                 ),

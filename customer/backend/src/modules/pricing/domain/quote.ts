@@ -1,5 +1,5 @@
-import { Money } from './money';
-import { RideCategory } from './ride-category';
+import { Money } from './money.js';
+import { RideCategory } from './ride-category.js';
 
 export interface FareComponent {
   type: string;

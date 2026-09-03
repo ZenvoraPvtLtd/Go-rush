@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { RideController } from './presentation/ride.controller';
-import { RideService } from './application/ride.service';
-import { PricingModule } from '../pricing/pricing.module';
+import { RideController } from './presentation/ride.controller.js';
+import { RideService } from './application/ride.service.js';
+import { PricingModule } from '../pricing/pricing.module.js';
 
 @Module({
   imports: [PricingModule],

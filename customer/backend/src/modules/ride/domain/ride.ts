@@ -1,4 +1,4 @@
-import { Quote } from '../../pricing/domain/quote';
+import { Quote } from '../../pricing/domain/quote.js';
 
 export enum RideStatus {
   REQUESTED = 'REQUESTED',

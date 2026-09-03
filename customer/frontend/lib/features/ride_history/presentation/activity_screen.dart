@@ -5,7 +5,7 @@ import '../../../shared/theme/tokens.dart';
 import '../../../shared/widgets/error_states/gorush_empty_state.dart';
 
 class ActivityScreen extends StatelessWidget {
-  const ActivityScreen({Key? key}) : super(key: key);
+  const ActivityScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

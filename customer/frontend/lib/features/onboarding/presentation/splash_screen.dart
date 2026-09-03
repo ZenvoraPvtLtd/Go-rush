@@ -4,7 +4,7 @@ import '../../../shared/theme/colors.dart';
 import '../../../shared/theme/typography.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -22,9 +22,10 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 1500));
     
     // In a real app we would check token validity here
-    final bool hasValidSession = false; // Mocking no session
+    bool hasValidSession = false; // Mocking no session
     
     if (mounted) {
+      // ignore: dead_code
       if (hasValidSession) {
         context.go('/home');
       } else {

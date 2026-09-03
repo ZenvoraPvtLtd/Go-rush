@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Driver, DriverStatus } from '../domain/driver';
-import { RideCategoryType } from '../../pricing/domain/ride-category';
+import { Driver, DriverStatus } from '../domain/driver.js';
+import { RideCategoryType } from '../../pricing/domain/ride-category.js';
 
 @Injectable()
 export class MockDriverLocationProvider {

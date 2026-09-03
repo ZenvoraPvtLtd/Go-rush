@@ -6,7 +6,7 @@ import '../../../shared/theme/typography.dart';
 import '../../../shared/widgets/buttons/gorush_button.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
-  const PhoneAuthScreen({Key? key}) : super(key: key);
+  const PhoneAuthScreen({super.key});
 
   @override
   State<PhoneAuthScreen> createState() => _PhoneAuthScreenState();
@@ -127,7 +127,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               SizedBox(
                 width: double.infinity,
                 child: GoRushButton(
-                  text: 'Continue',
+                  label: 'Continue',
                   isLoading: _isLoading,
                   onPressed: _validateAndSubmit,
                 ),

@@ -1,9 +1,9 @@
 import { Controller, Post, Get, Body, Param, UnauthorizedException, Headers } from '@nestjs/common';
-import { ShareSessionService } from '../application/share-session.service';
-import { SharedRideLocationMapper } from '../domain/shared-ride-location';
+import { ShareSessionService } from '../application/share-session.service.js';
+import { SharedRideLocationMapper } from '../domain/shared-ride-location.js';
 // In a real environment, these would be proper classes
-// import { RedisLocationStore } from '../../realtime/infrastructure/redis-location-store';
-// import { RideService } from '../../ride/application/ride.service';
+// import { RedisLocationStore } from '../../realtime/infrastructure/redis-location-store.js';
+// import { RideService } from '../../ride/application/ride.service.js';
 
 @Controller('v1/public/ride-share')
 export class TrackingController {

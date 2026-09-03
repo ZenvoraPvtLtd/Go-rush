@@ -1,5 +1,5 @@
-import { Money } from '../domain/money';
-import { RideCategoryType } from '../domain/ride-category';
+import { Money } from '../domain/money.js';
+import { RideCategoryType } from '../domain/ride-category.js';
 
 export interface PricingContext {
   category: RideCategoryType;

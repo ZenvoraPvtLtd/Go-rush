@@ -50,7 +50,7 @@ final GoRouter goRouter = GoRouter(
         ),
         GoRoute(
           path: '/safety',
-          builder: (context, state) => const SafetyScreen(),
+          builder: (context, state) => const SafetyScreen(rideId: ''),
         ),
         GoRoute(
           path: '/profile',

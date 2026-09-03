@@ -5,9 +5,10 @@ import '../../../core/ride/domain/ride_models.dart';
 import '../../../core/ride/data/ride_repository.dart';
 import '../../../core/realtime/application/realtime_service.dart';
 import '../../../core/realtime/domain/driver_location.dart';
-import '../../../shared/theme/gorush_colors.dart';
-import '../../../shared/theme/gorush_typography.dart';
-import '../../../shared/theme/gorush_spacing.dart';
+import '../../../shared/theme/colors.dart';
+import '../../../shared/theme/typography.dart';
+import '../../../shared/theme/tokens.dart';
+import '../../safety/presentation/safety_screen.dart';
 
 class RideStatusScreen extends StatefulWidget {
   final Ride initialRide;
@@ -15,11 +16,11 @@ class RideStatusScreen extends StatefulWidget {
   final RealtimeService realtimeService;
 
   const RideStatusScreen({
-    Key? key,
+    super.key,
     required this.initialRide,
     required this.repository,
     required this.realtimeService,
-  }) : super(key: key);
+  });
 
   @override
   State<RideStatusScreen> createState() => _RideStatusScreenState();
@@ -102,9 +103,11 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
       _locationSub?.cancel();
       widget.realtimeService.unsubscribeFromRide(_ride.rideId);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to cancel: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to cancel: $e')),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isCancelling = false);
     }
@@ -170,7 +173,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
                     const SizedBox(height: GoRushSpacing.lg),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(color: GoRushColors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(16)),
+                      decoration: BoxDecoration(color: GoRushColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
                       child: Text(
                         'Live: [${_latestLocation!.latitude.toStringAsFixed(4)}, ${_latestLocation!.longitude.toStringAsFixed(4)}] Seq: ${_latestLocation!.sequenceNumber}',
                         style: GoRushTypography.body2.copyWith(fontFamily: 'monospace', color: GoRushColors.primary),
@@ -294,9 +297,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
       floatingActionButton: (_ride.status == RideStatus.driverAssigned || _ride.status == RideStatus.driverEnRoute || _ride.status == RideStatus.rideStarted || _ride.status == RideStatus.rideInProgress) ? FloatingActionButton.extended(
         onPressed: () {
           // Navigate to Safety Screen
-          import('../../safety/presentation/safety_screen.dart').then((module) {
-             Navigator.push(context, MaterialPageRoute(builder: (_) => module.SafetyScreen(rideId: _ride.rideId)));
-          });
+          Navigator.push(context, MaterialPageRoute(builder: (_) => SafetyScreen(rideId: _ride.rideId)));
         },
         backgroundColor: GoRushColors.primary,
         icon: const Icon(Icons.shield, color: Colors.white),

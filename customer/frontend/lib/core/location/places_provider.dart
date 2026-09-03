@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'domain/places_models.dart';
-
+import 'domain/location_models.dart';
 abstract class PlacesProvider {
   Future<List<PlaceSuggestion>> autocomplete(String query);
   Future<PlaceDetails> getPlaceDetails(String placeId);

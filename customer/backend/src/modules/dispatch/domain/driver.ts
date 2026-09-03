@@ -1,4 +1,4 @@
-import { RideCategoryType } from '../../pricing/domain/ride-category';
+import { RideCategoryType } from '../../pricing/domain/ride-category.js';
 
 export enum DriverStatus {
   OFFLINE = 'OFFLINE',

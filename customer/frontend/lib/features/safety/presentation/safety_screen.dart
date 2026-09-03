@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../../shared/theme/gorush_colors.dart';
-import '../../../shared/theme/gorush_typography.dart';
-import '../../../shared/theme/gorush_spacing.dart';
+import '../../../shared/theme/colors.dart';
+import '../../../shared/theme/typography.dart';
+import '../../../shared/theme/tokens.dart';
 import '../domain/share_session.dart';
 import 'share_ride_sheet.dart';
 
 class SafetyScreen extends StatefulWidget {
   final String rideId;
 
-  const SafetyScreen({Key? key, required this.rideId}) : super(key: key);
+  const SafetyScreen({super.key, required this.rideId});
 
   @override
   State<SafetyScreen> createState() => _SafetyScreenState();
@@ -66,7 +66,7 @@ class _SafetyScreenState extends State<SafetyScreen> {
             Container(
               padding: const EdgeInsets.all(GoRushSpacing.md),
               decoration: BoxDecoration(
-                color: GoRushColors.primary.withOpacity(0.1),
+                color: GoRushColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12)
               ),
               child: Row(
@@ -108,7 +108,7 @@ class _SafetyScreenState extends State<SafetyScreen> {
                   child: const Text('Stop', style: TextStyle(color: GoRushColors.error)),
                 ),
               ),
-            )).toList()
+            ))
           ],
         ),
       ),

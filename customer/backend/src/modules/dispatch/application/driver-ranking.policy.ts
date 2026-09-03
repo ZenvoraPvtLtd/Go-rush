@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Driver } from '../domain/driver';
+import { Driver } from '../domain/driver.js';
 
 export interface RankedDriver {
   driver: Driver;

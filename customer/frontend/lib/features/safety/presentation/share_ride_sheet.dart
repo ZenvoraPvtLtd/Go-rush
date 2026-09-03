@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../shared/theme/gorush_colors.dart';
-import '../../../shared/theme/gorush_typography.dart';
-import '../../../shared/theme/gorush_spacing.dart';
+import '../../../shared/theme/colors.dart';
+import '../../../shared/theme/typography.dart';
+import '../../../shared/theme/tokens.dart';
 
 class ShareRideSheet extends StatefulWidget {
   final String rideId;
 
-  const ShareRideSheet({Key? key, required this.rideId}) : super(key: key);
+  const ShareRideSheet({super.key, required this.rideId});
 
   @override
   State<ShareRideSheet> createState() => _ShareRideSheetState();

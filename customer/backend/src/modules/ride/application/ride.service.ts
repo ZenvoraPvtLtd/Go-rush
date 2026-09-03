@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
-import { Ride, RideStatus } from '../domain/ride';
-import { RideStateMachine } from '../domain/ride-state-machine';
-import { QuoteService } from '../../pricing/application/quote.service';
+import { Ride, RideStatus } from '../domain/ride.js';
+import { RideStateMachine } from '../domain/ride-state-machine.js';
+import { QuoteService } from '../../pricing/application/quote.service.js';
 import * as crypto from 'crypto';
 
 @Injectable()

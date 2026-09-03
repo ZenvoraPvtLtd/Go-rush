@@ -53,4 +53,24 @@ class GoRushTypography {
     color: GoRushColors.textMuted,
     height: 1.4,
   );
+
+  // Aliases for compatibility
+  static const TextStyle h2 = display;
+  static const TextStyle h3 = headline;
+  static const TextStyle h4 = title;
+  static const TextStyle body1 = body;
+  static const TextStyle body2 = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: GoRushColors.textSecondary,
+    height: 1.5,
+  );
+  static const TextStyle button = TextStyle(
+    fontFamily: fontFamily,
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: GoRushColors.surface,
+    height: 1.4,
+  );
 }

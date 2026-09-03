@@ -1,4 +1,4 @@
-import { RideStatus } from './ride';
+import { RideStatus } from './ride.js';
 import { BadRequestException } from '@nestjs/common';
 
 export class RideStateMachine {

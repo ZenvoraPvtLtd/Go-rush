@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OtpProvider } from '../domain/auth.types';
+import { OtpProvider } from '../domain/auth.types.js';
 
 @Injectable()
 export class MockOtpProvider implements OtpProvider {

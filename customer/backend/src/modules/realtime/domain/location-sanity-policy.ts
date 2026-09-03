@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DriverLocationPayload } from './location-payload';
+import { DriverLocationPayload } from './location-payload.js';
 
 export interface SanityResult {
   isValid: boolean;

@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Param, Body, Headers, UnauthorizedException } from '@nestjs/common';
-import { QuoteService } from '../application/quote.service';
+import { QuoteService } from '../application/quote.service.js';
 
 @Controller('v1/quotes')
 export class PricingController {

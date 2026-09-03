@@ -1,5 +1,5 @@
 import { Controller, Post, Param, Headers, UnauthorizedException } from '@nestjs/common';
-import { DispatchEngine } from '../application/dispatch.engine';
+import { DispatchEngine } from '../application/dispatch.engine.js';
 
 @Controller('v1/driver/offers')
 export class PartnerDispatchController {

@@ -1,4 +1,4 @@
-import { DriverOfferStatus } from './driver-offer';
+import { DriverOfferStatus } from './driver-offer.js';
 import { BadRequestException } from '@nestjs/common';
 
 export class DriverOfferStateMachine {

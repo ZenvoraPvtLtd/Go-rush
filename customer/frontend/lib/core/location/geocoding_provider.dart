@@ -1,5 +1,4 @@
 import 'domain/location_models.dart';
-import 'domain/places_models.dart';
 
 abstract class GeocodingProvider {
   Future<GeoCoordinate> geocode(String address);

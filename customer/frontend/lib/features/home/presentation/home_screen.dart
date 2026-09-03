@@ -7,14 +7,16 @@ import '../../../shared/widgets/map/gorush_location_pill.dart';
 import '../../quote/presentation/widgets/gorush_ride_category_card.dart';
 
 import '../../../shared/map/maps_provider.dart';
-import '../../core/location/location_service.dart';
+import '../../../core/location/location_service.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+
+class _HomeScreenState extends State<HomeScreen> {
   final GoogleMapsProviderImpl _mapsProvider = GoogleMapsProviderImpl();
   final LocationServiceImpl _locationService = LocationServiceImpl();
   bool _isLoadingLocation = false;
