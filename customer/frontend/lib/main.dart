@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'routing/router.dart';
-import 'shared/theme/colors.dart';
-import 'shared/theme/typography.dart';
+import 'shared/theme/app_theme.dart';
 
 void main() {
   runApp(const GoRushApp());
@@ -15,17 +14,7 @@ class GoRushApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'GoRush',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: GoRushColors.background,
-        primaryColor: GoRushColors.primary,
-        colorScheme: ColorScheme.light(
-          primary: GoRushColors.primary,
-          secondary: GoRushColors.accent,
-          surface: GoRushColors.surface,
-          error: GoRushColors.error,
-        ),
-        fontFamily: GoRushTypography.fontFamily,
-      ),
+      theme: AppTheme.lightTheme,
       routerConfig: goRouter,
     );
   }
