@@ -39,6 +39,7 @@ model Driver {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   rides           Ride[]
+  vehicleAssignments VehicleAssignment[]
 }
 
 model Admin {
@@ -82,4 +83,91 @@ model AnalyticsEvent {
   aggregateId   String
   payload       Json
   metadata      Json?
+}
+
+model Vehicle {
+  id                 String   @id @default(uuid())
+  partnerId          String?  // Optional reference to a Partner if implemented
+  registrationNumber String   @unique
+  make               String
+  model              String
+  manufacturingYear  Int?
+  fuelType           String?
+  status             String   @default("ACTIVE") // ACTIVE, INACTIVE, MAINTENANCE, SUSPENDED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  assignments        VehicleAssignment[]
+  inspections        VehicleInspection[]
+  maintenanceRecords MaintenanceRecord[]
+}
+
+model VehicleAssignment {
+  id        String   @id @default(uuid())
+  vehicleId String
+  driverId  String
+  status    String   @default("ACTIVE") // ACTIVE, ENDED
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id])
+
+  // Business Rule: Enforce one active assignment per driver/vehicle in backend logic.
+}
+
+model Zone {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VehicleInspection {
+  id             String   @id @default(uuid())
+  vehicleId      String
+  inspectionType String
+  status         String   @default("PENDING") // PASSED, FAILED, EXPIRED, PENDING
+  performedAt    DateTime?
+  expiresAt      DateTime?
+  performedBy    String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model MaintenanceRecord {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  description String
+  performedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model OperationalRestriction {
+  id          String   @id @default(uuid())
+  targetType  String   // DRIVER, VEHICLE, ZONE
+  targetId    String
+  reason      String
+  status      String   @default("ACTIVE") // ACTIVE, REVOKED
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FleetAuditEvent {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  targetId  String
+  metadata  Json?
+  createdAt DateTime @default(now())
 }
