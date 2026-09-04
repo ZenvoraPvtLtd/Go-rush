@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service.js';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -11,7 +12,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
-    if (user && user.password === pass) { // Basic check for now (no bcrypt hash check yet)
+    if (user && await bcrypt.compare(pass, user.password)) {
       const { password, ...result } = user;
       return result;
     }
@@ -26,8 +27,9 @@ export class AuthService {
   }
 
   async registerUser(data: any) {
-    // In a real app, hash password with bcrypt here
-    return this.usersService.create(data);
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(data.password, salt);
+    return this.usersService.create({ ...data, password: hashedPassword });
   }
 
   async generateOtp(email: string) {
@@ -38,7 +40,7 @@ export class AuthService {
     await this.usersService.updateOtp(email, otp, expiry);
     
     // In production, send SMS/Email here using Twilio/SendGrid
-    console.log(`[OTP Sent to ${email}]: ${otp}`);
+    // console.log(`[OTP Sent to ${email}]: ${otp}`); // Removed for security
     return { message: 'OTP sent successfully' };
   }
 
@@ -52,8 +54,9 @@ export class AuthService {
 
   async resetPassword(email: string, otp: string, newPassword: string) {
     await this.verifyOtp(email, otp);
-    // Hash new password here
-    await this.usersService.updatePassword(email, newPassword);
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    await this.usersService.updatePassword(email, hashedPassword);
     return { message: 'Password reset successful' };
   }
 }

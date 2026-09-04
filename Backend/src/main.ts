@@ -6,8 +6,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
   });
-  
-  app.enableCors();
+  app.enableCors({
+    origin: process.env.NODE_ENV === 'production' ? ['https://admin.gorush.com', 'https://gorush.com'] : '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   // Swagger Configuration
   const config = new DocumentBuilder()
