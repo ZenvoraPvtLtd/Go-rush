@@ -1,12 +1,11 @@
-# Analytics Privacy & PII Classification
+# Data Privacy and PII Governance
 
-## Data Masking
-The Data Warehouse must NOT ingest raw, unmasked PII unless legally required and explicitly authorized.
+## PII Classification
+- **CONFIDENTIAL**: `User.email`, `User.phone`, `User.password`, `Driver.email`, `Driver.phone`, `Driver.password`, `Driver.licenseImageUrl`
+- **INTERNAL**: `User.id`, `Driver.id`, `Ride.id`
+- **RESTRICTED**: GPS Location (`Ride.pickupLat`, `Ride.dropoffLat`, etc.)
 
-- **Passwords/Hashes:** `RESTRICTED` (Never ingested).
-- **Payment PAN/CVV:** `RESTRICTED` (Never touches GoRush servers, definitely never ingested).
-- **KYC Document Images:** `RESTRICTED` (Never ingested; Analytics only ingests the `status` enum).
-- **Precise GPS Routes:** `CONFIDENTIAL` (Coarsened to H3 hexagons or Zip Codes before aggregation).
-
-## Export Controls
-Any Admin user attempting to Export a CSV from the BI tool must pass through the `ANALYTICS_EXPORT` RBAC permission.
+## Analytics Handling
+- Do not copy raw PII (like plain text phone numbers) into analytics event payloads unless absolutely required and hashed.
+- Location data must be restricted to authorized users. Raw GPS history exports require executive approval.
+- Anonymization strategy: Replace User/Driver IDs with surrogate keys in the data warehouse (NOT CONFIGURED).

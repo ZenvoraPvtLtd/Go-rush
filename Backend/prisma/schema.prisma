@@ -69,3 +69,17 @@ model Ride {
   rider              User     @relation(fields: [riderId], references: [id])
   driver             Driver?  @relation(fields: [driverId], references: [id])
 }
+
+model AnalyticsEvent {
+  id            String   @id @default(uuid())
+  eventId       String   @unique
+  eventType     String
+  eventVersion  String   @default("1.0")
+  occurredAt    DateTime
+  publishedAt   DateTime @default(now())
+  producer      String
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  metadata      Json?
+}

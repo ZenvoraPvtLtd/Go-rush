@@ -1,20 +1,26 @@
-# KPI Dictionary & Governance
+# KPI Dictionary
 
-Every KPI shown in the Admin Dashboard must map to a governed definition here.
+## Ride Metrics
+### Total Rides
+- **Business Definition**: Total count of all ride records ever created.
+- **Formula**: `COUNT(ride.id)`
+- **Data Availability**: DATA AVAILABLE
+- **Source**: `Ride` table
 
-## 1. Gross Booking Value (GMV)
-- **Definition:** The total value of all completed rides, including taxes and platform fees, before partner payouts.
-- **Source Event:** `RideCompleted` (`finalFareMinor`).
-- **Owner:** Finance.
+### Completed Rides
+- **Business Definition**: Count of rides reaching a `COMPLETED` status.
+- **Formula**: `COUNT(ride.id) WHERE status = 'COMPLETED'`
+- **Data Availability**: DATA AVAILABLE
+- **Source**: `Ride` table
 
-## 2. Ride Cancellation Rate
-- **Definition:** (Total `RIDE_CANCELLED`) / (Total `RIDE_CREATED`) over a given time window.
-- **Source Event:** `RideCreated`, `RideCancelled`.
-- **Owner:** Ride Operations.
+### Cancellation Rate
+- **Business Definition**: Percentage of requested rides that were cancelled.
+- **Formula**: `(Cancelled Rides / Total Rides) * 100`
+- **Data Availability**: DATA AVAILABLE
+- **Source**: `Ride` table
 
-## 3. Driver Acceptance Rate
-- **Definition:** (Total `DRIVER_OFFER_ACCEPTED`) / (Total `DRIVER_OFFER_CREATED`).
-- **Source Event:** `DriverOfferCreated`, `DriverOfferAccepted`.
-- **Owner:** Dispatch Operations.
-
-*(Note: Live calculations are BLOCKED pending BI Tool configuration).*
+## Missing KPIs (DATA NOT AVAILABLE)
+- **Dispatch Success Rate**: BLOCKED (No dispatch offers table)
+- **Gross Booking Value (GBV)**: DATA NOT AVAILABLE (Requires Ledger/Financials, partial data in Ride.fare)
+- **Partner Earnings**: BLOCKED (No settlement/earning models)
+- **Average Rating**: BLOCKED (No review/rating tables)
