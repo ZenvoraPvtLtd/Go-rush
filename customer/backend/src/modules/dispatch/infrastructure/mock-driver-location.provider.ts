@@ -8,7 +8,7 @@ export class MockDriverLocationProvider {
     {
       driverId: 'drv_1',
       name: 'Ramesh K.',
-      vehicleCategory: RideCategoryType.MINI_SEDAN,
+      vehicleCategory: RideCategoryType.PRIME_SEDAN,
       status: DriverStatus.AVAILABLE,
       currentLocation: { lat: 22.7196, lng: 75.8577, updatedAt: new Date() },
       serviceAreaId: 'indore',

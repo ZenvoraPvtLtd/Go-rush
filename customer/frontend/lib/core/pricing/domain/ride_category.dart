@@ -1,7 +1,12 @@
 enum RideCategoryType {
   bike,
+  bikeLite,
   auto,
-  miniSedan,
+  autoLite,
+  cab,
+  cabLite,
+  primeSedan,
+  sevenSeater,
 }
 
 class RideCategory {
@@ -10,6 +15,7 @@ class RideCategory {
   final String displayName;
   final String description;
   final int capacity;
+  final int etaMinutes;
 
   const RideCategory({
     required this.id,
@@ -17,20 +23,38 @@ class RideCategory {
     required this.displayName,
     required this.description,
     required this.capacity,
+    this.etaMinutes = 3,
   });
 
   factory RideCategory.fromJson(Map<String, dynamic> json) {
-    final codeStr = json['code'] as String;
-    RideCategoryType code = RideCategoryType.miniSedan;
-    if (codeStr == 'BIKE') code = RideCategoryType.bike;
-    if (codeStr == 'AUTO') code = RideCategoryType.auto;
+    final codeStr = (json['code'] as String? ?? '').toUpperCase();
+    RideCategoryType code = RideCategoryType.cab;
+
+    if (codeStr == 'BIKE') {
+      code = RideCategoryType.bike;
+    } else if (codeStr == 'BIKE_LITE') {
+      code = RideCategoryType.bikeLite;
+    } else if (codeStr == 'AUTO') {
+      code = RideCategoryType.auto;
+    } else if (codeStr == 'AUTO_LITE') {
+      code = RideCategoryType.autoLite;
+    } else if (codeStr == 'CAB' || codeStr == 'MINI') {
+      code = RideCategoryType.cab;
+    } else if (codeStr == 'CAB_LITE') {
+      code = RideCategoryType.cabLite;
+    } else if (codeStr == 'PRIME_SEDAN' || codeStr == 'SEDAN') {
+      code = RideCategoryType.primeSedan;
+    } else if (codeStr == 'SEVEN_SEATER' || codeStr == 'PREMIUM_XL') {
+      code = RideCategoryType.sevenSeater;
+    }
 
     return RideCategory(
-      id: json['id'] as String,
+      id: json['id'] as String? ?? 'cat_1',
       code: code,
-      displayName: json['displayName'] as String,
-      description: json['description'] as String,
-      capacity: json['capacity'] as int,
+      displayName: json['displayName'] as String? ?? 'Cab',
+      description: json['description'] as String? ?? 'Comfortable AC Ride',
+      capacity: (json['capacity'] as num?)?.toInt() ?? 4,
+      etaMinutes: (json['etaMinutes'] as num?)?.toInt() ?? 3,
     );
   }
 }

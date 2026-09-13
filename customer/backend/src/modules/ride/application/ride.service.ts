@@ -13,7 +13,15 @@ export class RideService {
   private activeRidesByCustomer: Map<string, string> = new Map(); // customerId -> rideId
   private idempotencyStore: Map<string, Ride> = new Map();
 
-  async createRide(customerId: string, quoteId: string, idempotencyKey: string): Promise<Ride> {
+  async createRide(
+    customerId: string,
+    quoteId: string,
+    idempotencyKey: string,
+    pickupAddress: string = 'Sector 63, Noida (GPS Fixed)',
+    dropoffAddress: string = 'Terminal 3, IGI Airport, New Delhi',
+    paymentMethod: string = 'Google Pay',
+    specialInstructions: string = '',
+  ): Promise<Ride> {
     if (this.idempotencyStore.has(idempotencyKey)) {
       return this.idempotencyStore.get(idempotencyKey)!;
     }
@@ -37,7 +45,6 @@ export class RideService {
     }
 
     // 4. Create Ride Snapshot (Transactional Boundary)
-    // Mark quote as accepted
     quote.status = 'ACCEPTED';
 
     const newRide: Ride = {
@@ -45,6 +52,11 @@ export class RideService {
       customerId,
       status: RideStatus.REQUESTED,
       quoteSnapshot: quote,
+      pickupAddress,
+      dropoffAddress,
+      paymentMethod,
+      specialInstructions,
+      otpCode: Math.floor(1000 + Math.random() * 9000).toString(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -54,15 +66,11 @@ export class RideService {
     this.activeRidesByCustomer.set(customerId, newRide.rideId);
     this.idempotencyStore.set(idempotencyKey, newRide);
 
-    // 5. Emit Domain Event (Mock Outbox / Realtime publisher)
+    // 5. Emit Domain Event
     console.log(`[RideEventPublisher] Published RideCreated for rideId: ${newRide.rideId}`);
 
-    // Automatically transition to SEARCHING for Phase 6 flow
+    // Automatically transition to SEARCHING
     await this.transitionState(newRide.rideId, customerId, RideStatus.SEARCHING);
-
-    // Phase 7: Trigger Async Dispatch. (In prod, this is an Event/Queue publish)
-    // We emit an event globally or call DispatchEngine. 
-    // To prevent circular injection issues in this demo, we'll assume an Event was fired.
     
     return this.rides.get(newRide.rideId)!;
   }
@@ -72,13 +80,21 @@ export class RideService {
   }
 
   async assignDriverToRide(rideId: string, driverId: string): Promise<void> {
-    // In prod, driverId is stored on the Ride. For now we just mutate state.
     const ride = this.rides.get(rideId);
     if (!ride) throw new Error('Ride not found');
     if (ride.status !== RideStatus.SEARCHING) {
-      throw new Error('Ride is no longer searching. It may have been cancelled.');
+      throw new Error('Ride is no longer searching.');
     }
     
+    ride.driverInfo = {
+      driverId,
+      name: 'Ramesh Kumar',
+      vehicle: 'Maruti Suzuki Dzire',
+      plateNumber: 'UP16 B 4829',
+      rating: 4.9,
+      phone: '+91 98765 43210',
+    };
+
     await this.transitionState(rideId, ride.customerId, RideStatus.DRIVER_ASSIGNED);
   }
 

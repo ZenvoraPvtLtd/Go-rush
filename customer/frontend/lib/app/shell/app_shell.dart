@@ -43,16 +43,16 @@ class AppShell extends StatelessWidget {
         selectedIndex: currentIndex,
         onDestinationSelected: (index) => _onItemTapped(index, context),
         backgroundColor: GoRushColors.surface,
-        indicatorColor: GoRushColors.surfaceElevated,
+        indicatorColor: GoRushColors.primaryContainer,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home, color: GoRushColors.primary),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
+            selectedIcon: Icon(Icons.receipt_long, color: GoRushColors.primary),
             label: 'Activity',
           ),
           NavigationDestination(
@@ -62,7 +62,7 @@ class AppShell extends StatelessWidget {
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
+            selectedIcon: Icon(Icons.person, color: GoRushColors.primary),
             label: 'Profile',
           ),
         ],

@@ -29,4 +29,16 @@ export class PricingController {
     
     return this.quoteService.getQuote(id, customerId);
   }
+
+  @Post('apply-promo')
+  async applyPromo(
+    @Headers('Authorization') authHeader: string,
+    @Body('quoteId') quoteId: string,
+    @Body('promoCode') promoCode: string,
+  ) {
+    const customerId = authHeader ? 'cust_123' : null;
+    if (!customerId) throw new UnauthorizedException();
+
+    return this.quoteService.applyPromo(quoteId, promoCode, customerId);
+  }
 }

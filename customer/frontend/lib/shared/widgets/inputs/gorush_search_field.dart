@@ -23,12 +23,13 @@ class GoRushSearchField extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: GoRushSpacing.md, vertical: GoRushSpacing.md),
         decoration: BoxDecoration(
-          color: GoRushColors.surfaceElevated,
+          color: GoRushColors.surfaceVariant,
           borderRadius: BorderRadius.circular(GoRushRadius.md),
+          border: Border.all(color: GoRushColors.border),
         ),
         child: Row(
           children: [
-            const Icon(Icons.search, color: GoRushColors.textPrimary),
+            const Icon(Icons.search_rounded, color: GoRushColors.primary, size: 22),
             const SizedBox(width: GoRushSpacing.sm),
             Expanded(
               child: Text(

@@ -1,0 +1,25 @@
+# Node dependencies & build artifacts
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Database files
+data/
+*.sqlite
+*.db
+
+# Flutter / Dart
+.dart_tool/
+.pub-cache/
+.pub/
+customer/frontend/build/
+customer/frontend/.dart_tool/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

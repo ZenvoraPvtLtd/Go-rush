@@ -19,6 +19,19 @@ export interface Ride {
   customerId: string;
   status: RideStatus;
   quoteSnapshot: Quote; // Authoritative pricing and routing snapshot at the time of booking
+  pickupAddress?: string;
+  dropoffAddress?: string;
+  paymentMethod?: string;
+  specialInstructions?: string;
+  otpCode?: string;
+  driverInfo?: {
+    driverId: string;
+    name: string;
+    vehicle: string;
+    plateNumber: string;
+    rating: number;
+    phone: string;
+  };
   createdAt: Date;
   updatedAt: Date;
   cancellationReason?: string;

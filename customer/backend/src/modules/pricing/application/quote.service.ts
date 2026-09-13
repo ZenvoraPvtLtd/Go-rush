@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { PricingEngine } from './pricing-engine.js';
 import { Quote } from '../domain/quote.js';
 import { CATEGORIES, RideCategoryType } from '../domain/ride-category.js';
+import { Money } from '../domain/money.js';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -21,7 +22,16 @@ export class QuoteService {
       return this.idempotencyStore.get(idempotencyKey)!;
     }
 
-    const categories = [RideCategoryType.BIKE, RideCategoryType.AUTO, RideCategoryType.MINI_SEDAN];
+    const categories = [
+      RideCategoryType.BIKE,
+      RideCategoryType.BIKE_LITE,
+      RideCategoryType.AUTO,
+      RideCategoryType.AUTO_LITE,
+      RideCategoryType.CAB,
+      RideCategoryType.CAB_LITE,
+      RideCategoryType.PRIME_SEDAN,
+      RideCategoryType.SEVEN_SEATER,
+    ];
     const generatedQuotes: Quote[] = [];
 
     const now = new Date();
@@ -60,6 +70,32 @@ export class QuoteService {
     }
 
     return generatedQuotes;
+  }
+
+  async applyPromo(quoteId: string, promoCode: string, customerId: string): Promise<Quote> {
+    const quote = await this.getQuote(quoteId, customerId);
+    let discountAmountMinor = 0;
+    
+    const codeUpper = promoCode.toUpperCase().trim();
+    if (codeUpper === 'GORUSH50') {
+      discountAmountMinor = 5000; // ₹50 OFF
+    } else if (codeUpper === 'WELCOME20') {
+      discountAmountMinor = 2000; // ₹20 OFF
+    } else if (codeUpper === 'FIRST100') {
+      discountAmountMinor = 10000; // ₹100 OFF
+    } else {
+      throw new BadRequestException({ code: 'INVALID_PROMO', message: 'Invalid or expired promo code' });
+    }
+
+    const currentTotalMinor = quote.fareBreakdown.total.amountMinor;
+    const newDiscountMinor = Math.min(discountAmountMinor, currentTotalMinor);
+    const newTotalMinor = Math.max(0, currentTotalMinor - newDiscountMinor);
+
+    quote.fareBreakdown.discount = new Money(newDiscountMinor, 'INR');
+    quote.fareBreakdown.total = new Money(newTotalMinor, 'INR');
+
+    this.quotes.set(quoteId, quote);
+    return quote;
   }
 
   async getQuote(quoteId: string, customerId: string): Promise<Quote> {

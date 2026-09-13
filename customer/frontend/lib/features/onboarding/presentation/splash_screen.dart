@@ -18,19 +18,10 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _bootstrapApp() async {
-    // Phase 3: Bootstrap session (Mock verification)
-    await Future.delayed(const Duration(milliseconds: 1500));
-    
-    // In a real app we would check token validity here
-    bool hasValidSession = false; // Mocking no session
+    await Future.delayed(const Duration(milliseconds: 1200));
     
     if (mounted) {
-      // ignore: dead_code
-      if (hasValidSession) {
-        context.go('/home');
-      } else {
-        context.go('/auth/phone');
-      }
+      context.go('/auth/welcome');
     }
   }
 
@@ -43,18 +34,36 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 84,
+              height: 84,
               decoration: const BoxDecoration(
                 color: GoRushColors.surface,
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                  ),
+                ],
               ),
-              child: const Icon(Icons.electric_car, size: 48, color: GoRushColors.primary),
+              child: const Icon(Icons.directions_car_rounded, size: 48, color: GoRushColors.primary),
             ),
             const SizedBox(height: 24),
             Text(
               'GoRush',
-              style: GoRushTypography.display.copyWith(color: GoRushColors.surface),
+              style: GoRushTypography.display.copyWith(
+                color: GoRushColors.surface,
+                fontWeight: FontWeight.bold,
+                fontSize: 36,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Fast & Reliable Rides',
+              style: GoRushTypography.body.copyWith(
+                color: Colors.white70,
+                fontSize: 14,
+              ),
             ),
           ],
         ),

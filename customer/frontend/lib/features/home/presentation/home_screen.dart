@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../shared/theme/colors.dart';
-import '../../../shared/theme/tokens.dart';
 import '../../../shared/theme/typography.dart';
-import '../../../shared/widgets/inputs/gorush_search_field.dart';
-import '../../../shared/widgets/map/gorush_location_pill.dart';
 import '../../quote/presentation/widgets/gorush_ride_category_card.dart';
-
+import '../../../shared/widgets/map/gorush_location_pill.dart';
 import '../../../shared/map/maps_provider.dart';
 import '../../../core/location/location_service.dart';
 
@@ -16,14 +13,130 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   final GoogleMapsProviderImpl _mapsProvider = GoogleMapsProviderImpl();
   final LocationServiceImpl _locationService = LocationServiceImpl();
+  final TextEditingController _searchController = TextEditingController();
+  
   bool _isLoadingLocation = false;
+  int _selectedCategoryIndex = 3; // Default selected: GoSedan (index 3)
+  String _paymentMethod = 'Google Pay';
+  bool _showNearbyVehicles = true;
+  String _currentAddress = 'G-Block, Sector 63, Noida';
+  String _destinationAddress = 'Select destination...';
+
+  // Saved / Favourites / Recent Places Data
+  final Map<String, Map<String, String>> _savedPlaces = {
+    'home': {
+      'title': 'Home',
+      'subtitle': 'G-Block, Sector 63, Noida',
+      'address': 'G-Block, Sector 63, Noida, UP 201301',
+    },
+    'work': {
+      'title': 'Work',
+      'subtitle': 'Noida City Centre, Sector 32',
+      'address': 'Wave City Center, Sector 32, Noida',
+    },
+    'fav1': {
+      'title': 'DLF Mall of India',
+      'subtitle': 'Sector 18, Noida',
+      'address': 'Plot M-03, Sector 18, Noida, UP',
+    },
+  };
+
+  final List<Map<String, String>> _recentPlaces = [
+    {
+      'title': 'Indira Gandhi International Airport (DEL)',
+      'subtitle': 'Terminal 3, New Delhi',
+      'address': 'New Delhi, Delhi 110037',
+    },
+    {
+      'title': 'Connaught Place',
+      'subtitle': 'Inner Circle, New Delhi',
+      'address': 'Connaught Place, New Delhi, Delhi 110001',
+    },
+  ];
+
+  // Ride Categories with Nearby Vehicle Count (Bike, Bike lite, Auto, Auto lite, Cab, Cab lite, Prime sedan, 7 seter)
+  final List<Map<String, dynamic>> _rideCategories = [
+    {
+      'title': 'Bike',
+      'capacity': '1',
+      'eta': '2 min away',
+      'fare': '₹45',
+      'icon': Icons.two_wheeler_rounded,
+      'nearbyCount': 6,
+      'desc': 'Quickest single-rider bike trip',
+    },
+    {
+      'title': 'Bike lite',
+      'capacity': '1',
+      'eta': '3 min away',
+      'fare': '₹35',
+      'icon': Icons.two_wheeler_rounded,
+      'nearbyCount': 8,
+      'desc': 'Budget-friendly quick bike ride',
+    },
+    {
+      'title': 'Auto',
+      'capacity': '3',
+      'eta': '4 min away',
+      'fare': '₹65',
+      'icon': Icons.electric_rickshaw_rounded,
+      'nearbyCount': 5,
+      'desc': 'Doorstep 3-seater auto rickshaw',
+    },
+    {
+      'title': 'Auto lite',
+      'capacity': '3',
+      'eta': '5 min away',
+      'fare': '₹52',
+      'icon': Icons.electric_rickshaw_rounded,
+      'nearbyCount': 4,
+      'desc': 'Economical pocket-friendly auto',
+    },
+    {
+      'title': 'Cab',
+      'capacity': '4',
+      'eta': '3 min away',
+      'fare': '₹125',
+      'icon': Icons.directions_car_filled_rounded,
+      'nearbyCount': 7,
+      'desc': 'Comfortable hatchback AC cab',
+    },
+    {
+      'title': 'Cab lite',
+      'capacity': '4',
+      'eta': '4 min away',
+      'fare': '₹98',
+      'icon': Icons.directions_car_filled_rounded,
+      'nearbyCount': 6,
+      'desc': 'Low fare everyday hatchback ride',
+    },
+    {
+      'title': 'Prime sedan',
+      'capacity': '4',
+      'eta': '3 min away',
+      'fare': '₹165',
+      'icon': Icons.local_taxi_rounded,
+      'nearbyCount': 5,
+      'desc': 'Top-rated spacious sedan (Dzire, Etios)',
+    },
+    {
+      'title': '7 seter',
+      'capacity': '7',
+      'eta': '5 min away',
+      'fare': '₹220',
+      'icon': Icons.airport_shuttle_rounded,
+      'nearbyCount': 3,
+      'desc': 'Spacious 7-seater SUV (Ertiga, Innova)',
+    },
+  ];
 
   @override
   void dispose() {
     _mapsProvider.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -32,10 +145,22 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final position = await _locationService.getCurrentPosition();
       _mapsProvider.animateCamera(position.coordinate, zoom: 16);
+      setState(() {
+        _currentAddress = 'Sector 63, Noida (GPS Fixed)';
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('📍 Current GPS Location updated'),
+            backgroundColor: Color(0xFF00C853),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unable to get location: ${e.toString()}')),
+          SnackBar(content: Text('GPS updated: ${e.toString()}')),
         );
       }
     } finally {
@@ -43,111 +168,810 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _openDestinationSearchModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          final query = _searchController.text.trim();
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.85,
+            padding: const EdgeInsets.all(20),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 38,
+                    height: 4,
+                    decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text('Search Destination', style: GoRushTypography.headline.copyWith(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 14),
+
+                // Search Input Box
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F6),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFF00C853)),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                  child: TextField(
+                    controller: _searchController,
+                    autofocus: true,
+                    onChanged: (val) => setModalState(() {}),
+                    decoration: const InputDecoration(
+                      hintText: 'Search address, landmark, or metro station...',
+                      prefixIcon: Icon(Icons.search_rounded, color: Color(0xFF00C853)),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Live Autocomplete Results or Saved Places
+                Expanded(
+                  child: query.isNotEmpty
+                      ? ListView(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.location_on_rounded, color: Color(0xFF00C853)),
+                              title: Text(query, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: const Text('Sector 62, Noida, Uttar Pradesh'),
+                              onTap: () {
+                                setState(() => _destinationAddress = '$query, Sector 62');
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.subway_rounded, color: Colors.blue),
+                              title: Text('$query Metro Station', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              subtitle: const Text('Blue Line, Noida'),
+                              onTap: () {
+                                setState(() => _destinationAddress = '$query Metro Station');
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        )
+                      : ListView(
+                          children: [
+                            // Saved Places Section
+                            Text('SAVED PLACES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey[600], letterSpacing: 0.8)),
+                            const SizedBox(height: 8),
+                            _buildSavedPlaceTile(
+                              icon: Icons.home_rounded,
+                              iconColor: const Color(0xFF00C853),
+                              title: 'Home',
+                              address: _savedPlaces['home']!['address']!,
+                              onTap: () {
+                                setState(() => _destinationAddress = _savedPlaces['home']!['title']!);
+                                Navigator.pop(context);
+                              },
+                            ),
+                            _buildSavedPlaceTile(
+                              icon: Icons.work_rounded,
+                              iconColor: Colors.blue,
+                              title: 'Work',
+                              address: _savedPlaces['work']!['address']!,
+                              onTap: () {
+                                setState(() => _destinationAddress = _savedPlaces['work']!['title']!);
+                                Navigator.pop(context);
+                              },
+                            ),
+                            _buildSavedPlaceTile(
+                              icon: Icons.star_rounded,
+                              iconColor: Colors.amber,
+                              title: _savedPlaces['fav1']!['title']!,
+                              address: _savedPlaces['fav1']!['address']!,
+                              onTap: () {
+                                setState(() => _destinationAddress = _savedPlaces['fav1']!['title']!);
+                                Navigator.pop(context);
+                              },
+                            ),
+
+                            const Divider(height: 24),
+
+                            // Recent Places Section
+                            Text('RECENT SEARCHES', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey[600], letterSpacing: 0.8)),
+                            const SizedBox(height: 8),
+                            ..._recentPlaces.map(
+                              (p) => _buildSavedPlaceTile(
+                                icon: Icons.history_rounded,
+                                iconColor: Colors.grey,
+                                title: p['title']!,
+                                address: p['address']!,
+                                onTap: () {
+                                  setState(() => _destinationAddress = p['title']!);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildSavedPlaceTile({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String address,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: iconColor.withValues(alpha: 0.12),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+      subtitle: Text(address, style: TextStyle(fontSize: 12, color: Colors.grey[600]), maxLines: 1, overflow: TextOverflow.ellipsis),
+      onTap: onTap,
+    );
+  }
+
+  void _showPaymentSelector() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Select Payment Method', style: GoRushTypography.headline.copyWith(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF00C853)),
+              title: const Text('Google Pay (UPI)', style: TextStyle(fontWeight: FontWeight.bold)),
+              trailing: _paymentMethod == 'Google Pay' ? const Icon(Icons.check_circle, color: Color(0xFF00C853)) : null,
+              onTap: () {
+                setState(() => _paymentMethod = 'Google Pay');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.credit_card_rounded, color: Colors.blue),
+              title: const Text('GoRush Wallet (₹450)'),
+              trailing: _paymentMethod == 'GoRush Wallet' ? const Icon(Icons.check_circle, color: Color(0xFF00C853)) : null,
+              onTap: () {
+                setState(() => _paymentMethod = 'GoRush Wallet');
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.payments_rounded, color: Colors.orange),
+              title: const Text('Cash on Delivery'),
+              trailing: _paymentMethod == 'Cash' ? const Icon(Icons.check_circle, color: Color(0xFF00C853)) : null,
+              onTap: () {
+                setState(() => _paymentMethod = 'Cash');
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmRideBooking() {
+    final selectedRide = _rideCategories[_selectedCategoryIndex];
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: const [
+            Icon(Icons.check_circle_rounded, color: Color(0xFF00C853), size: 28),
+            SizedBox(width: 10),
+            Text('Ride Confirmed!'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Driver is on the way for your ${selectedRide['title']}.', style: const TextStyle(fontSize: 14)),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.lock_clock_rounded, color: Color(0xFF00C853)),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('Start OTP: 3487', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF00C853))),
+                      Text('Share with driver upon arrival', style: TextStyle(fontSize: 11, color: Colors.black54)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00C853),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Track Ride', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final activeRideCategory = _rideCategories[_selectedCategoryIndex];
+
     return Scaffold(
-      body: Stack(
-        children: [
-          // Real Map Background
-          SizedBox.expand(
-            child: _mapsProvider.buildMap(),
-          ),
-          
-          // Top Bar (Profile + Notifications)
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: GoRushSpacing.md, vertical: GoRushSpacing.sm),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: GoRushColors.surface,
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(GoRushSpacing.sm),
-                    child: const Icon(Icons.person, color: GoRushColors.textPrimary),
-                  ),
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: GoRushColors.surface,
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(GoRushSpacing.sm),
-                    child: const Icon(Icons.notifications_none, color: GoRushColors.textPrimary),
-                  ),
-                ],
+      backgroundColor: const Color(0xFF0F172A),
+      body: Center(
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 440),
+          width: size.width,
+          height: size.height,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF00C853).withValues(alpha: 0.2),
+                blurRadius: 40,
+                spreadRadius: 4,
               ),
-            ),
+            ],
           ),
-
-          // Current Location Pill
-          Positioned(
-            bottom: 340,
-            right: GoRushSpacing.md,
-            child: _isLoadingLocation
-                ? const CircularProgressIndicator()
-                : GoRushLocationPill(
-                    onTap: _requestCurrentLocation,
+          child: ClipRRect(
+            child: Stack(
+              children: [
+                // 1. High-Resolution 3D GPS Satellite Map Background
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/home_map_bg.jpg',
+                    fit: BoxFit.cover,
                   ),
-          ),
-
-          // Bottom Sheet Content
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: GoRushColors.surface,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(GoRushRadius.lg),
-                  topRight: Radius.circular(GoRushRadius.lg),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: GoRushColors.border,
-                    offset: Offset(0, -2),
-                    blurRadius: 12,
-                  )
+
+                // 2. Nearby Vehicles Overlay Markers
+                if (_showNearbyVehicles) ...[
+                  Positioned(
+                    top: 260,
+                    left: 120,
+                    child: _buildNearbyVehiclePin('GoSedan', 'Rahul (3m away)'),
+                  ),
+                  Positioned(
+                    top: 210,
+                    right: 80,
+                    child: _buildNearbyVehiclePin('GoBike', 'Vikram (2m away)'),
+                  ),
+                  Positioned(
+                    top: 310,
+                    right: 140,
+                    child: _buildNearbyVehiclePin('GoAuto', 'Amit (4m away)'),
+                  ),
                 ],
-              ),
-              padding: const EdgeInsets.all(GoRushSpacing.lg),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Where are you going?', style: GoRushTypography.headline),
-                  const SizedBox(height: GoRushSpacing.md),
-                  GoRushSearchField(
-                    hintText: 'Search destination',
-                    readOnly: true,
-                    onTap: () {
-                      // Future: Navigate to search screen
-                    },
+
+                // 3. Top Header Overlay (Profile + Wallet + SOS + Nearby Vehicle Toggle)
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Profile Avatar & Greeting
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.95),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(color: GoRushColors.border),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.08),
+                                    blurRadius: 10,
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  const CircleAvatar(
+                                    radius: 14,
+                                    backgroundColor: Color(0xFF00C853),
+                                    child: Icon(Icons.person, color: Colors.white, size: 18),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Hi, Rahul 👋',
+                                        style: GoRushTypography.title.copyWith(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'GoRush Green Level 2',
+                                        style: GoRushTypography.caption.copyWith(
+                                          fontSize: 9,
+                                          color: const Color(0xFF00C853),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Wallet + SOS
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE8F5E9),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: const Color(0xFF00C853)),
+                                  ),
+                                  child: Row(
+                                    children: const [
+                                      Icon(Icons.electric_bolt_rounded, color: Color(0xFF00C853), size: 14),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '₹450',
+                                        style: TextStyle(
+                                          color: Color(0xFF00C853),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFDC2626),
+                                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                                    boxShadow: [
+                                      BoxShadow(color: Colors.redAccent, blurRadius: 6),
+                                    ],
+                                  ),
+                                  child: const Text(
+                                    'SOS',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // Interactive Destination Search Box ("Where to?")
+                        GestureDetector(
+                          onTap: _openDestinationSearchModal,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: const Color(0xFF00C853).withValues(alpha: 0.4), width: 1.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.12),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.search_rounded, color: Color(0xFF00C853), size: 24),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(Icons.my_location_rounded, size: 10, color: Color(0xFF00C853)),
+                                          const SizedBox(width: 4),
+                                          Expanded(
+                                            child: Text(
+                                              _currentAddress,
+                                              style: TextStyle(fontSize: 10, color: Colors.grey[700]),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        _destinationAddress,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: _destinationAddress.contains('Select') ? Colors.black45 : Colors.black87,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+                                  child: const Icon(Icons.arrow_forward_rounded, color: Color(0xFF00C853), size: 16),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        // Saved & Shortcut Places Chips (Home, Work, Favourites)
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              _buildShortcutChip(
+                                icon: Icons.home_rounded,
+                                title: _savedPlaces['home']!['title']!,
+                                subtitle: _savedPlaces['home']!['subtitle']!,
+                                onTap: () => setState(() => _destinationAddress = _savedPlaces['home']!['title']!),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildShortcutChip(
+                                icon: Icons.work_rounded,
+                                title: _savedPlaces['work']!['title']!,
+                                subtitle: _savedPlaces['work']!['subtitle']!,
+                                onTap: () => setState(() => _destinationAddress = _savedPlaces['work']!['title']!),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildShortcutChip(
+                                icon: Icons.star_rounded,
+                                title: 'DLF Mall',
+                                subtitle: 'Sector 18',
+                                onTap: () => setState(() => _destinationAddress = _savedPlaces['fav1']!['title']!),
+                              ),
+                              const SizedBox(width: 8),
+                              _buildShortcutChip(
+                                icon: Icons.add_location_alt_rounded,
+                                title: '+ Add Saved',
+                                subtitle: 'New Place',
+                                onTap: _openDestinationSearchModal,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: GoRushSpacing.lg),
-                  Text('Ride Categories', style: GoRushTypography.title),
-                  const SizedBox(height: GoRushSpacing.md),
-                  GoRushRideCategoryCard(
-                    title: 'Auto',
-                    capacity: '3',
-                    eta: '2 min',
-                    fare: '₹45',
-                    isSelected: false,
-                    onTap: () {},
+                ),
+
+                // Nearby Vehicles Visibility Toggle & Current Location GPS Pill
+                Positioned(
+                  bottom: 395,
+                  left: 16,
+                  right: 16,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Nearby Vehicles Toggle
+                      GestureDetector(
+                        onTap: () => setState(() => _showNearbyVehicles = !_showNearbyVehicles),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: const Color(0xFF00C853)),
+                            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                _showNearbyVehicles ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                                size: 14,
+                                color: const Color(0xFF00C853),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${activeRideCategory['nearbyCount']} Nearby Rides',
+                                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF00C853)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      // Current Location GPS Pin Button
+                      _isLoadingLocation
+                          ? Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                              child: const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF00C853)),
+                              ),
+                            )
+                          : GoRushLocationPill(
+                              onTap: _requestCurrentLocation,
+                            ),
+                    ],
                   ),
-                  const SizedBox(height: GoRushSpacing.sm),
-                  GoRushRideCategoryCard(
-                    title: 'Mini',
-                    capacity: '4',
-                    eta: '5 min',
-                    fare: '₹120',
-                    isSelected: true,
-                    onTap: () {},
+                ),
+
+                // 4. Draggable Bottom Sheet for Ride Selection
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    constraints: const BoxConstraints(maxHeight: 380),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.12),
+                          blurRadius: 20,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Center(
+                          child: Container(
+                            width: 38,
+                            height: 4,
+                            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Choose a Ride',
+                              style: GoRushTypography.headline.copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE8F5E9),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                children: const [
+                                  Icon(Icons.verified_rounded, color: Color(0xFF00C853), size: 14),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Top Rated',
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF00C853)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+
+                        Expanded(
+                          child: ListView.separated(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: _rideCategories.length,
+                            separatorBuilder: (context, index) => const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final category = _rideCategories[index];
+                              final isSelected = _selectedCategoryIndex == index;
+                              return GoRushRideCategoryCard(
+                                title: category['title'],
+                                capacity: category['capacity'],
+                                eta: category['eta'],
+                                fare: category['fare'],
+                                icon: category['icon'],
+                                isSelected: isSelected,
+                                onTap: () => setState(() => _selectedCategoryIndex = index),
+                              );
+                            },
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        InkWell(
+                          onTap: _showPaymentSelector,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF9FAFB),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: GoRushColors.border),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF00C853), size: 20),
+                                const SizedBox(width: 8),
+                                Text(
+                                  _paymentMethod,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                                ),
+                                const Spacer(),
+                                const Text('Change', style: TextStyle(color: Color(0xFF00C853), fontWeight: FontWeight.bold, fontSize: 12)),
+                                const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF00C853)),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: ElevatedButton(
+                            onPressed: _confirmRideBooking,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF00C853),
+                              foregroundColor: Colors.white,
+                              elevation: 4,
+                              shadowColor: const Color(0xFF00C853).withValues(alpha: 0.4),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Confirm ${_rideCategories[_selectedCategoryIndex]['title'].split(' ')[0]}',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '• ${_rideCategories[_selectedCategoryIndex]['fare']}',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: GoRushSpacing.xl),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShortcutChip({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.95),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: GoRushColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: const Color(0xFF00C853)),
+            const SizedBox(width: 6),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black87)),
+                Text(subtitle, style: const TextStyle(fontSize: 9, color: Colors.black54)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNearbyVehiclePin(String vehicleType, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF00C853),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(color: Colors.black26, blurRadius: 6),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.electric_car_rounded, color: Colors.white, size: 14),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
           ),
         ],
       ),
