@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/gorush_colors.dart';
 import '../theme/gorush_typography.dart';
 
 class GoRushTextField extends StatelessWidget {

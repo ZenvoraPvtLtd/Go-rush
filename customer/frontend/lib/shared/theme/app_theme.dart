@@ -11,7 +11,6 @@ class AppTheme {
         primary: GoRushColors.brand,
         secondary: GoRushColors.charcoal,
         surface: GoRushColors.surface,
-        background: GoRushColors.background,
         error: GoRushColors.error,
       ),
       textTheme: const TextTheme(
