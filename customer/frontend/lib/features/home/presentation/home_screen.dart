@@ -384,12 +384,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _confirmRideBooking() {
+    final rootContext = context;
     final selectedRide = _rideCategories[_selectedCategoryIndex];
     final int rawFare = int.tryParse(selectedRide['price'].toString().replaceAll('₹', '')) ?? 45;
 
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
+      context: rootContext,
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Row(
           children: const [
@@ -429,7 +430,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         actions: [
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
               final activeRide = Ride(
                 rideId: 'ride_${DateTime.now().millisecondsSinceEpoch}',
                 customerId: 'cust_123',
@@ -469,7 +469,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 createdAt: DateTime.now(),
                 updatedAt: DateTime.now(),
               );
-              context.push('/ride/status', extra: activeRide);
+              Navigator.of(dialogContext).pop();
+              rootContext.push('/ride/status', extra: activeRide);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF00C853),
