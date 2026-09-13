@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/theme/typography.dart';
 import '../../quote/presentation/widgets/gorush_ride_category_card.dart';
@@ -11,6 +10,9 @@ import '../../../core/pricing/domain/ride_category.dart';
 import '../../../core/pricing/domain/quote_models.dart';
 import '../../../core/pricing/domain/money.dart';
 import '../../safety/presentation/sos_emergency_sheet.dart';
+import '../../ride/presentation/ride_status_screen.dart';
+import '../../../core/ride/data/ride_repository.dart';
+import '../../../core/realtime/application/realtime_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -470,7 +472,15 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 updatedAt: DateTime.now(),
               );
               Navigator.of(dialogContext).pop();
-              rootContext.push('/ride/status', extra: activeRide);
+              Navigator.of(rootContext).push(
+                MaterialPageRoute(
+                  builder: (_) => RideStatusScreen(
+                    initialRide: activeRide,
+                    repository: HttpRideRepository(),
+                    realtimeService: MockRealtimeService(),
+                  ),
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF00C853),
