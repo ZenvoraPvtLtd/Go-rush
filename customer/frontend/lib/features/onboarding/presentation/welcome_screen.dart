@@ -211,13 +211,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Icon(Icons.login_rounded, color: Colors.black, size: 20),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      'Log In with Password',
-                                      style: GoRushTypography.title.copyWith(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        'Log In with Password',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoRushTypography.title.copyWith(
+                                          color: Colors.black,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ],
