@@ -5,7 +5,7 @@ build/
 *.tsbuildinfo
 
 # Database files
-data/
+customer/backend/data/
 *.sqlite
 *.db
 

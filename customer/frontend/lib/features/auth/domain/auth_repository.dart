@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../../../core/network/api_config.dart';
 
 abstract class AuthRepository {
   Future<void> sendOtp(String phoneNumber);
@@ -24,7 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
       : _dio = dio ??
             Dio(
               BaseOptions(
-                baseUrl: 'http://localhost:3001/v1',
+                baseUrl: ApiConfig.baseUrl,
                 connectTimeout: const Duration(seconds: 10),
                 receiveTimeout: const Duration(seconds: 10),
                 headers: {'Content-Type': 'application/json'},

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'api_config.dart';
 import 'auth_interceptor.dart';
 import '../security/token_manager.dart';
 
@@ -8,7 +9,7 @@ class ApiClient {
   ApiClient({required TokenManager tokenManager}) {
     dio = Dio(
       BaseOptions(
-        baseUrl: 'http://localhost:3001/v1',
+        baseUrl: ApiConfig.baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         headers: {'Content-Type': 'application/json'},
