@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/theme/typography.dart';
 import '../../quote/presentation/widgets/gorush_ride_category_card.dart';
 import '../../../shared/widgets/map/gorush_location_pill.dart';
 import '../../../shared/map/maps_provider.dart';
 import '../../../core/location/location_service.dart';
+import '../../../core/ride/domain/ride_models.dart';
+import '../../../core/pricing/domain/ride_category.dart';
+import '../../../core/pricing/domain/quote_models.dart';
+import '../../../core/pricing/domain/money.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -379,6 +384,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   void _confirmRideBooking() {
     final selectedRide = _rideCategories[_selectedCategoryIndex];
+    final int rawFare = int.tryParse(selectedRide['price'].toString().replaceAll('₹', '')) ?? 45;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -420,7 +427,49 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         ),
         actions: [
           ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              final activeRide = Ride(
+                rideId: 'ride_${DateTime.now().millisecondsSinceEpoch}',
+                customerId: 'cust_123',
+                status: RideStatus.driverAssigned,
+                quoteSnapshot: Quote(
+                  quoteId: 'quote_${DateTime.now().millisecondsSinceEpoch}',
+                  rideCategory: RideCategory(
+                    id: (selectedRide['id'] as String?) ?? 'auto_lite',
+                    code: (selectedRide['type'] as RideCategoryType?) ?? RideCategoryType.autoLite,
+                    displayName: (selectedRide['title'] as String?) ?? 'Auto lite',
+                    description: 'Eco-friendly ride',
+                    capacity: (selectedRide['capacity'] as int?) ?? 3,
+                    etaMinutes: 2,
+                  ),
+                  distanceMeters: 8500,
+                  durationSeconds: 1320,
+                  fareBreakdown: FareBreakdown(
+                    subtotal: Money(amountMinor: rawFare * 100, currency: 'INR'),
+                    components: const [],
+                    discount: const Money(amountMinor: 0, currency: 'INR'),
+                    tax: const Money(amountMinor: 0, currency: 'INR'),
+                    total: Money(amountMinor: rawFare * 100, currency: 'INR'),
+                  ),
+                  pricingVersion: 'v1.0',
+                  createdAt: DateTime.now(),
+                  expiresAt: DateTime.now().add(const Duration(minutes: 30)),
+                ),
+                pickupAddress: _currentAddress.isEmpty ? 'G-Block, Sector 63, Noida' : _currentAddress,
+                dropoffAddress: _searchController.text.isEmpty ? 'Noida City Centre, Sector 32' : _searchController.text,
+                paymentMethod: _paymentMethod,
+                otpCode: '3487',
+                driverName: 'Ramesh Kumar',
+                driverPhone: '+91 98765 43210',
+                driverVehicle: selectedRide['title'] ?? 'Auto Lite',
+                driverPlate: 'UP16 AT 4829',
+                driverRating: 4.9,
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+              );
+              context.push('/ride/status', extra: activeRide);
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF00C853),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

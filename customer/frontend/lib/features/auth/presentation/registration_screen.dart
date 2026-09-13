@@ -112,7 +112,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Account created for $userName! Data stored in DB.',
+                  'Account created for $userName! Welcome to GoRush.',
                   style: GoRushTypography.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -249,7 +249,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
                                   ),
                                   const SizedBox(height: GoRushSpacing.xs),
                                   Text(
-                                    'Register once to save your credentials to the Database and login anytime without OTP.',
+                                    'Register once with your details to log in anytime securely without OTP.',
                                     style: GoRushTypography.body.copyWith(
                                       color: const Color(0xFF475569),
                                       fontSize: 14,
@@ -448,7 +448,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> with SingleTick
 
                                   // Submit Button
                                   GoRushButton(
-                                    label: 'Create Account & Save to DB',
+                                    label: 'Create GoRush Account',
                                     isLoading: _isLoading,
                                     onPressed: _handleRegister,
                                   ),

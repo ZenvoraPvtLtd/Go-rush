@@ -779,7 +779,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           _buildMenuTile(
                             icon: Icons.logout_rounded,
                             title: 'Log Out',
-                            subtitle: 'Sign out of your account & clear DB session',
+                            subtitle: 'Sign out of your GoRush account',
                             iconColor: Colors.amber,
                             titleColor: Colors.amber,
                             onTap: () {

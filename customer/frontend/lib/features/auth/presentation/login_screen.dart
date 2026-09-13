@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Welcome back, $userName! DB session authenticated.',
+                  'Welcome back, $userName! Logged in successfully.',
                   style: GoRushTypography.body.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -338,7 +338,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   ),
                                   const SizedBox(height: GoRushSpacing.xs),
                                   Text(
-                                    'Log in using your registered Email/Phone & Password to fetch your account details directly from the DB.',
+                                    'Log in using your registered Email/Phone & Password to access your GoRush account.',
                                     style: GoRushTypography.body.copyWith(
                                       color: const Color(0xFF475569),
                                       fontSize: 14,
@@ -452,7 +452,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
                                   // Submit Button
                                   GoRushButton(
-                                    label: 'Log In & Fetch DB Profile',
+                                    label: 'Log In to GoRush',
                                     isLoading: _isLoading,
                                     onPressed: _handleLogin,
                                   ),
