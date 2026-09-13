@@ -8,7 +8,7 @@ import '../../../core/realtime/domain/driver_location.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/theme/typography.dart';
 import '../../../shared/theme/tokens.dart';
-import '../../safety/presentation/safety_screen.dart';
+import '../../safety/presentation/sos_emergency_sheet.dart';
 import 'in_app_chat_sheet.dart';
 import 'post_ride_screen.dart';
 
@@ -183,11 +183,31 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => SafetyScreen(rideId: _ride.rideId)));
-            },
+            onPressed: () => SosEmergencySheet.show(context, rideId: _ride.rideId),
             icon: const Icon(Icons.shield_rounded, color: GoRushColors.primary),
-            tooltip: 'Safety & SOS',
+            tooltip: 'Safety Toolkit',
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Center(
+              child: GestureDetector(
+                onTap: () => SosEmergencySheet.show(context, rideId: _ride.rideId),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDC2626),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: const [
+                      BoxShadow(color: Colors.redAccent, blurRadius: 6),
+                    ],
+                  ),
+                  child: const Text(
+                    'SOS',
+                    style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

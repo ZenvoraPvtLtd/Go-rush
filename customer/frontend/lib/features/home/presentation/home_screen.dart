@@ -10,6 +10,7 @@ import '../../../core/ride/domain/ride_models.dart';
 import '../../../core/pricing/domain/ride_category.dart';
 import '../../../core/pricing/domain/quote_models.dart';
 import '../../../core/pricing/domain/money.dart';
+import '../../safety/presentation/sos_emergency_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -616,21 +617,24 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFFDC2626),
-                                    borderRadius: BorderRadius.all(Radius.circular(16)),
-                                    boxShadow: [
-                                      BoxShadow(color: Colors.redAccent, blurRadius: 6),
-                                    ],
-                                  ),
-                                  child: const Text(
-                                    'SOS',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900,
+                                GestureDetector(
+                                  onTap: () => SosEmergencySheet.show(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFFDC2626),
+                                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                                      boxShadow: [
+                                        BoxShadow(color: Colors.redAccent, blurRadius: 8, spreadRadius: 1),
+                                      ],
+                                    ),
+                                    child: const Text(
+                                      'SOS',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                     ),
                                   ),
                                 ),

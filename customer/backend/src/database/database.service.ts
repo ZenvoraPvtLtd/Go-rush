@@ -307,6 +307,18 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       );
     `);
 
+    // 18b. emergency_contacts
+    await this.execute(`
+      CREATE TABLE IF NOT EXISTS emergency_contacts (
+        id VARCHAR(64) PRIMARY KEY,
+        user_id VARCHAR(64) NOT NULL,
+        name VARCHAR(128) NOT NULL,
+        phone VARCHAR(32) NOT NULL,
+        relationship VARCHAR(64) DEFAULT 'Family',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
     // 19. pricing_rules
     await this.execute(`
       CREATE TABLE IF NOT EXISTS pricing_rules (
