@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/theme/typography.dart';
 import '../../quote/presentation/widgets/gorush_ride_category_card.dart';
+import '../../quote/presentation/widgets/gorush_metro_card.dart';
 import '../../../shared/widgets/map/gorush_location_pill.dart';
 import '../../../shared/map/maps_provider.dart';
 import '../../../core/location/location_service.dart';
@@ -138,6 +139,16 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       'icon': Icons.airport_shuttle_rounded,
       'nearbyCount': 3,
       'desc': 'Spacious 7-seater SUV (Ertiga, Innova)',
+    },
+    {
+      'title': 'Metro',
+      'capacity': 'Unlimited',
+      'eta': 'Coming Soon',
+      'fare': 'Coming Soon',
+      'icon': Icons.subway_rounded,
+      'nearbyCount': 0,
+      'desc': 'Fast • Affordable • Direct city transit',
+      'isMetro': true,
     },
   ];
 
@@ -385,10 +396,210 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 
+  void _showMetroComingSoonSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 36),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag Handle
+            Center(
+              child: Container(
+                width: 38,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Metro Icon Badge
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF1565C0), Color(0xFF1E88E5)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF1565C0).withValues(alpha: 0.3),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.subway_rounded,
+                color: Colors.white,
+                size: 36,
+                semanticLabel: 'Metro ride option',
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Metro Title
+            const Text(
+              'Metro',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF111827),
+                letterSpacing: -0.5,
+              ),
+              semanticsLabel: 'Metro — Public Transport Option',
+            ),
+            const SizedBox(height: 6),
+
+            // Description
+            Text(
+              'Fast • Affordable • Direct city transit',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[600],
+                letterSpacing: 0.3,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Info Rows
+            _buildMetroInfoRow(
+              icon: Icons.access_time_rounded,
+              label: 'Estimated Time',
+              value: '—',
+              valueColor: Colors.grey[500]!,
+            ),
+            const SizedBox(height: 10),
+            _buildMetroInfoRow(
+              icon: Icons.confirmation_number_rounded,
+              label: 'Fare',
+              value: '—',
+              valueColor: Colors.grey[500]!,
+            ),
+            const SizedBox(height: 10),
+            _buildMetroInfoRow(
+              icon: Icons.train_rounded,
+              label: 'Station',
+              value: '—',
+              valueColor: Colors.grey[500]!,
+            ),
+            const SizedBox(height: 24),
+
+            // Coming Soon Badge
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF6FF),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFF1E88E5).withValues(alpha: 0.4)),
+              ),
+              child: Column(
+                children: [
+                  const Icon(Icons.rocket_launch_rounded, color: Color(0xFF1565C0), size: 22),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Metro booking — Coming Soon',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1565C0),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'We are working on integrating Metro into GoRush.',
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Close Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1565C0),
+                  foregroundColor: Colors.white,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text(
+                  'Got it',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetroInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color valueColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF9FAFB),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey[200]!),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: const Color(0xFF1565C0)),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 13, color: Color(0xFF4B5563)),
+          ),
+          const Spacer(),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: valueColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _confirmRideBooking() {
-    final rootContext = context;
     final selectedRide = _rideCategories[_selectedCategoryIndex];
-    final int rawFare = int.tryParse(selectedRide['price'].toString().replaceAll('₹', '')) ?? 45;
+
+    // Metro: show Coming Soon sheet instead of booking flow
+    if (selectedRide['isMetro'] == true) {
+      _showMetroComingSoonSheet();
+      return;
+    }
+
+    final rootContext = context;
+    final int rawFare = int.tryParse(selectedRide['fare'].toString().replaceAll('₹', '')) ?? 45;
 
     showDialog(
       context: rootContext,
@@ -745,7 +956,9 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '${activeRideCategory['nearbyCount']} Nearby Rides',
+                                activeRideCategory['isMetro'] == true
+                                    ? 'Metro Coming Soon'
+                                    : '${activeRideCategory['nearbyCount']} Nearby Rides',
                                 style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF00C853)),
                               ),
                             ],
@@ -840,15 +1053,21 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             itemBuilder: (context, index) {
                               final category = _rideCategories[index];
                               final isSelected = _selectedCategoryIndex == index;
-                              return GoRushRideCategoryCard(
-                                title: category['title'],
-                                capacity: category['capacity'],
-                                eta: category['eta'],
-                                fare: category['fare'],
-                                icon: category['icon'],
-                                isSelected: isSelected,
-                                onTap: () => setState(() => _selectedCategoryIndex = index),
-                              );
+                              final isMetro = category['isMetro'] == true;
+                              return isMetro
+                                  ? GoRushMetroCard(
+                                      isSelected: isSelected,
+                                      onTap: () => setState(() => _selectedCategoryIndex = index),
+                                    )
+                                  : GoRushRideCategoryCard(
+                                      title: category['title'],
+                                      capacity: category['capacity'],
+                                      eta: category['eta'],
+                                      fare: category['fare'],
+                                      icon: category['icon'],
+                                      isSelected: isSelected,
+                                      onTap: () => setState(() => _selectedCategoryIndex = index),
+                                    );
                             },
                           ),
                         ),
@@ -897,27 +1116,41 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 borderRadius: BorderRadius.circular(28),
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Confirm ${_rideCategories[_selectedCategoryIndex]['title'].split(' ')[0]}',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 0.3,
+                            child: Builder(builder: (_) {
+                              final sel = _rideCategories[_selectedCategoryIndex];
+                              final isMetro = sel['isMetro'] == true;
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    isMetro ? Icons.subway_rounded : null,
+                                    color: Colors.white,
+                                    size: isMetro ? 18 : 0,
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '• ${_rideCategories[_selectedCategoryIndex]['fare']}',
-                                  style: const TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w900,
+                                  if (isMetro) const SizedBox(width: 6),
+                                  Text(
+                                    isMetro
+                                        ? 'Metro — Coming Soon'
+                                        : 'Confirm ${sel['title'].toString().split(' ')[0]}',
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.3,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  if (!isMetro) ...[
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '• ${sel['fare']}',
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            }),
                           ),
                         ),
                       ],
