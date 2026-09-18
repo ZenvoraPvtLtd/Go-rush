@@ -11,7 +11,7 @@ class AppShell extends StatelessWidget {
     final String location = GoRouterState.of(context).uri.toString();
     if (location.startsWith('/home')) return 0;
     if (location.startsWith('/activity')) return 1;
-    if (location.startsWith('/safety')) return 2;
+    if (location.startsWith('/travel')) return 2;
     if (location.startsWith('/profile')) return 3;
     return 0;
   }
@@ -25,7 +25,7 @@ class AppShell extends StatelessWidget {
         context.go('/activity');
         break;
       case 2:
-        context.go('/safety');
+        context.go('/travel');
         break;
       case 3:
         context.go('/profile');
@@ -48,17 +48,17 @@ class AppShell extends StatelessWidget {
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
             selectedIcon: Icon(Icons.home, color: GoRushColors.primary),
-            label: 'Home',
+            label: 'Ride',
           ),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
             selectedIcon: Icon(Icons.receipt_long, color: GoRushColors.primary),
-            label: 'Activity',
+            label: 'All Services',
           ),
           NavigationDestination(
-            icon: Icon(Icons.shield_outlined, color: GoRushColors.safety),
-            selectedIcon: Icon(Icons.shield, color: GoRushColors.safety),
-            label: 'Safety',
+            icon: Icon(Icons.beach_access_outlined),
+            selectedIcon: Icon(Icons.beach_access, color: GoRushColors.primary),
+            label: 'Travel',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),

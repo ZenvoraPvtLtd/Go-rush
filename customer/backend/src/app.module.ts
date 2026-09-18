@@ -8,9 +8,10 @@ import { WalletModule } from './modules/wallet/wallet.module.js';
 import { UserModule } from './modules/user/user.module.js';
 import { SafetyModule } from './modules/safety/safety.module.js';
 import { DatabaseModule } from './database/database.module.js';
+import { TravelModule } from './modules/travel/travel.module.js';
 
 @Module({
-  imports: [DatabaseModule, AuthModule, PlacesModule, PricingModule, RideModule, AnalyticsModule, WalletModule, UserModule, SafetyModule],
+  imports: [DatabaseModule, AuthModule, PlacesModule, PricingModule, RideModule, AnalyticsModule, WalletModule, UserModule, SafetyModule, TravelModule],
   controllers: [],
   providers: [],
 })

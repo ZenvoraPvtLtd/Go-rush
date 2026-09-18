@@ -5,7 +5,6 @@ import '../features/onboarding/presentation/splash_screen.dart';
 import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/ride_history/presentation/activity_screen.dart';
-import '../features/safety/presentation/safety_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/auth/presentation/phone_auth_screen.dart';
 import '../features/auth/presentation/otp_verification_screen.dart';
@@ -15,6 +14,7 @@ import '../features/auth/presentation/registration_screen.dart';
 import '../features/ride/presentation/ride_status_screen.dart';
 import '../features/ride/presentation/post_ride_screen.dart';
 import '../features/wallet/presentation/wallet_screen.dart';
+import '../features/travel/presentation/travel_screen.dart';
 import '../core/ride/data/ride_repository.dart';
 import '../core/ride/domain/ride_models.dart';
 import '../core/pricing/domain/quote_models.dart';
@@ -135,8 +135,8 @@ final GoRouter goRouter = GoRouter(
           builder: (context, state) => const ActivityScreen(),
         ),
         GoRoute(
-          path: '/safety',
-          builder: (context, state) => const SafetyScreen(rideId: ''),
+          path: '/travel',
+          builder: (context, state) => const TravelScreen(),
         ),
         GoRoute(
           path: '/profile',

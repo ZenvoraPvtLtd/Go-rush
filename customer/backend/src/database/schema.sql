@@ -231,3 +231,45 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     after JSONB,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 22. travel_deals
+CREATE TABLE IF NOT EXISTS travel_deals (
+    id VARCHAR(64) PRIMARY KEY,
+    category VARCHAR(32) NOT NULL CHECK (category IN ('hotel', 'flight', 'bus', 'train')),
+    title VARCHAR(128) NOT NULL,
+    subtitle VARCHAR(256),
+    discount_label VARCHAR(64) NOT NULL,
+    discount_description VARCHAR(256),
+    partner VARCHAR(64) NOT NULL,
+    deep_link_url TEXT,
+    icon_type VARCHAR(32) NOT NULL,
+    is_zero_fee BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 23. travel_banners
+CREATE TABLE IF NOT EXISTS travel_banners (
+    id VARCHAR(64) PRIMARY KEY,
+    title VARCHAR(128) NOT NULL,
+    subtitle VARCHAR(128),
+    promo_code VARCHAR(64),
+    promo_description VARCHAR(256),
+    image_url TEXT,
+    bg_color VARCHAR(32) DEFAULT '#1565C0',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    valid_from TIMESTAMP WITH TIME ZONE,
+    valid_until TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Seed initial travel deals
+INSERT INTO travel_deals (id, category, title, subtitle, discount_label, discount_description, partner, deep_link_url, icon_type, is_zero_fee, sort_order)
+VALUES
+  ('deal_hotel_001', 'hotel', 'Hotel', 'Best room rates', 'Upto 55% Off', 'On top hotel chains across India', 'Goibibo', 'https://goibibo.com', 'hotel', FALSE, 1),
+  ('deal_flight_001', 'flight', 'Flight', 'Lowest fare, guaranteed', 'Upto ₹4000 Off', 'On domestic & international flights', 'Goibibo', 'https://goibibo.com/flights', 'flight', FALSE, 2),
+  ('deal_bus_001', 'bus', 'Bus', 'Save big on', 'Upto 25% Off', 'On intercity bus bookings', 'redBus', 'https://redbus.in', 'bus', FALSE, 3),
+  ('deal_train_001', 'train', 'Train', '', 'Zero Service Fee', 'Book trains with no extra charges', 'Confirmtkt', 'https://confirmtkt.com', 'train', TRUE, 4)
+ON CONFLICT (id) DO NOTHING;
