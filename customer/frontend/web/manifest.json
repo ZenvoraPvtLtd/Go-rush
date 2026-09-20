@@ -1,6 +1,6 @@
 {
-    "name": "frontend",
-    "short_name": "frontend",
+    "name": "GoRush",
+    "short_name": "GoRush",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

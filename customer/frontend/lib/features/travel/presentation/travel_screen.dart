@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import '../../../shared/theme/colors.dart';
 import '../data/travel_category_data.dart';
@@ -10,6 +9,7 @@ import 'hotel_screen.dart';
 import 'flight_screen.dart';
 import 'bus_screen.dart';
 import 'train_screen.dart';
+import '../../../core/utils/external_launcher_service.dart';
 
 // ─────────────────────────────────────────────────────────────────
 // Data Models
@@ -901,14 +901,8 @@ class _PartnersBanner extends StatelessWidget {
 
           if (confirm != true) return;
 
-          final Uri url = Uri.parse(partnerConfig.url);
-          try {
-            if (await canLaunchUrl(url)) {
-              await launchUrl(url, mode: LaunchMode.externalApplication);
-            } else {
-              throw Exception('Could not launch');
-            }
-          } catch (e) {
+          final launched = await ExternalLauncherService.launchExternalUrl(partnerConfig.url);
+          if (!launched) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
