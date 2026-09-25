@@ -8,37 +8,37 @@ datasource db {
 }
 
 model User {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   name            String
-  email           String   @unique
-  phone           String   @unique
+  email           String    @unique
+  phone           String    @unique
   password        String
   profileImageUrl String?
   otpCode         String?
   otpExpiry       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   rides           Ride[]
 }
 
 model Driver {
-  id              String   @id @default(uuid())
-  name            String
-  email           String   @unique
-  phone           String   @unique
-  password        String
-  vehicleDetails  String?
-  status          String   @default("OFFLINE") // ONLINE, OFFLINE, BUSY
-  lat             Float?
-  lng             Float?
-  profileImageUrl String?
-  licenseImageUrl String?
-  isKycApproved   Boolean  @default(false)
-  otpCode         String?
-  otpExpiry       DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  rides           Ride[]
+  id                 String              @id @default(uuid())
+  name               String
+  email              String              @unique
+  phone              String              @unique
+  password           String
+  vehicleDetails     String?
+  status             String              @default("OFFLINE") // ONLINE, OFFLINE, BUSY
+  lat                Float?
+  lng                Float?
+  profileImageUrl    String?
+  licenseImageUrl    String?
+  isKycApproved      Boolean             @default(false)
+  otpCode            String?
+  otpExpiry          DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  rides              Ride[]
   vehicleAssignments VehicleAssignment[]
 }
 
@@ -66,9 +66,10 @@ model Ride {
   cancellationReason String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  
-  rider              User     @relation(fields: [riderId], references: [id])
-  driver             Driver?  @relation(fields: [driverId], references: [id])
+
+  rider      User        @relation(fields: [riderId], references: [id])
+  driver     Driver?     @relation(fields: [driverId], references: [id])
+  rideAudits RideAudit[]
 }
 
 model AnalyticsEvent {
@@ -87,7 +88,7 @@ model AnalyticsEvent {
 
 model Vehicle {
   id                 String   @id @default(uuid())
-  partnerId          String?  // Optional reference to a Partner if implemented
+  partnerId          String? // Optional reference to a Partner if implemented
   registrationNumber String   @unique
   make               String
   model              String
@@ -103,17 +104,17 @@ model Vehicle {
 }
 
 model VehicleAssignment {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   vehicleId String
   driverId  String
-  status    String   @default("ACTIVE") // ACTIVE, ENDED
-  startedAt DateTime @default(now())
+  status    String    @default("ACTIVE") // ACTIVE, ENDED
+  startedAt DateTime  @default(now())
   endedAt   DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
-  driver    Driver   @relation(fields: [driverId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  driver  Driver  @relation(fields: [driverId], references: [id])
 
   // Business Rule: Enforce one active assignment per driver/vehicle in backend logic.
 }
@@ -127,40 +128,40 @@ model Zone {
 }
 
 model VehicleInspection {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   vehicleId      String
   inspectionType String
-  status         String   @default("PENDING") // PASSED, FAILED, EXPIRED, PENDING
+  status         String    @default("PENDING") // PASSED, FAILED, EXPIRED, PENDING
   performedAt    DateTime?
   expiresAt      DateTime?
   performedBy    String?
   notes          String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
 }
 
 model MaintenanceRecord {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   vehicleId   String
   description String
   performedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
 }
 
 model OperationalRestriction {
-  id          String   @id @default(uuid())
-  targetType  String   // DRIVER, VEHICLE, ZONE
-  targetId    String
-  reason      String
-  status      String   @default("ACTIVE") // ACTIVE, REVOKED
-  createdBy   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  targetType String // DRIVER, VEHICLE, ZONE
+  targetId   String
+  reason     String
+  status     String   @default("ACTIVE") // ACTIVE, REVOKED
+  createdBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model FleetAuditEvent {
@@ -170,4 +171,29 @@ model FleetAuditEvent {
   targetId  String
   metadata  Json?
   createdAt DateTime @default(now())
+}
+
+model IdempotencyRecord {
+  id             String   @id @default(uuid())
+  key            String   @unique
+  actorId        String
+  endpoint       String
+  requestBody    Json?
+  responseBody   Json?
+  responseStatus Int?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model RideAudit {
+  id            String   @id @default(uuid())
+  rideId        String
+  previousState String
+  newState      String
+  actorId       String
+  reason        String?
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  ride Ride @relation(fields: [rideId], references: [id])
 }
