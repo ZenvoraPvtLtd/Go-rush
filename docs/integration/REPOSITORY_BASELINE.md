@@ -1,17 +1,22 @@
-# Repository Baseline
+# Phase 0: Repository Baseline
 
 ## Status
-- **Customer Frontend**: VERIFIED (Flutter)
-- **Customer Backend**: VERIFIED (NestJS + TypeORM) - Duplicate
-- **Partner Frontend/Backend**: MISSING (Partner directory not found directly, driver app exists in import)
-- **Core Backend**: VERIFIED (NestJS + Prisma + BullMQ + Redis + Socket.io)
-- **Existing Admin Frontend**: VERIFIED (Next.js in `frontend/`)
-- **Imported Driver**: VERIFIED (`Go-rush-driver-app-main` with Python backend and Flutter app)
-- **Imported Admin**: VERIFIED (`Go-rush_admin_panil-main`)
+- **Customer Flutter App**: Implemented (`customer/frontend/`)
+- **Customer Backend**: Implemented but redundant (`customer/backend/` - NestJS)
+- **Driver Flutter App**: Implemented (`Go-rush-driver-app-main/driver_flutter/frontend`)
+- **Admin Panel**: Implemented (`Go-rush_admin_panil-main/frontend/` - Next.js)
+- **Core Backend**: Implemented and Canonical (`Backend/` - NestJS + Prisma + PostgreSQL)
+- **Imported Driver Backend**: Implemented but redundant (`Go-rush-driver-app-main/backend/` - Python/FastAPI or MongoDB based)
 
 ## Canonical Systems
-Canonical Production Backend = GoRush Core Backend
+- **Canonical Production Backend**: `Backend/` (GoRush Core Backend)
+- **Database**: PostgreSQL (via Prisma in `Backend/prisma/schema.prisma`)
 
-## Critical Constraints
-- Do not overwrite `customer/`, `Backend/`, `frontend/`
-- Do not deploy or push in this phase.
+## Findings
+- **Database Schemas**: `Backend/` has `User`, `Driver`, `Admin`, `Ride`, `AnalyticsEvent`, `Vehicle`, `Zone`, etc.
+- **Mock Data**: Present in Flutter clients and Next.js Admin Panel.
+- **Duplicate Backends**: `customer/backend/` and `Go-rush-driver-app-main/backend/` must be treated as redundant/reference only.
+
+## Constraints
+- Existing code in `customer/`, `Backend/`, `frontend/`, `Go-rush-driver-app-main/` must be preserved.
+- Clients must only interact with `Backend/`.

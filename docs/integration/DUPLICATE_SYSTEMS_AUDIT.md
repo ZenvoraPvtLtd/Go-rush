@@ -1,24 +1,17 @@
-# Duplicate Systems Audit
+# Phase 0: Duplicate Systems Audit
 
-## Backend Implementations
-- **Canonical**: `Backend/` (NestJS + Prisma + Redis + WebSockets)
-- **Duplicate 1**: `customer/backend/` (NestJS + TypeORM)
-- **Duplicate 2**: `Go-rush-driver-app-main/chatbot_driver_backend/` (Python/FastAPI)
+## Identified Duplicate Systems
+1. **Customer Backend (`customer/backend/`)**
+   - Tech: NestJS
+   - Status: Duplicate. Should be deprecated. Core Backend (`Backend/`) has the same/better capability.
+2. **Driver Backend (`Go-rush-driver-app-main/backend/`)**
+   - Tech: Python/MongoDB (Legacy/Imported)
+   - Status: Duplicate. Core Backend already has `Driver`, `Vehicle`, `Ride` models. 
+3. **Admin Backend (`Go-rush_admin_panil-main/backend/` - if applicable)**
+   - Tech: Node/Python
+   - Status: Duplicate. Core Backend has `Admin` model and RBAC foundations.
 
-## Admin Panels
-- **Canonical Candidate**: `frontend/` (Next.js)
-- **Duplicate**: `Go-rush_admin_panil-main/`
-
-## User/Ride/Driver Models
-- **Canonical**: Models in `Backend/prisma/`
-- **Duplicate**: Models defined in `customer/backend/` (TypeORM entities) and `chatbot_driver_backend/` (SQLAlchemy/Alembic)
-
-## WebSocket Implementations
-- **Canonical**: `@nestjs/platform-socket.io` in `Backend/`
-- **Duplicate**: Unverified Socket logic in Python backend or customer backend.
-
-## Databases
-- **Canonical**: PostgreSQL/PostGIS configured via Prisma in `Backend/`
-- **Duplicate**: SQLite/PG in `customer/backend/`, SQLAlchemy DB in Python driver backend.
-
-Canonical Production Backend = GoRush Core Backend
+## Resolution Plan
+- All clients (Customer, Driver, Admin) must be re-routed to use **Core Backend (`Backend/`)**.
+- Duplicate backends should be kept purely as reference materials for business logic extraction (if any unique logic exists).
+- No production traffic should be routed to duplicate backends.

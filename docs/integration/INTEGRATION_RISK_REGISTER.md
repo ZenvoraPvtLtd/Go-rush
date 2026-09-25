@@ -1,15 +1,15 @@
-# Integration Risk Register
+# Phase 0: Integration Risk Register
 
 ## High Risks
-- **Data Fragmentation**: Multiple backends (`Backend/`, `customer/backend/`, `chatbot_driver_backend/`) could lead to multiple sources of truth.
-- **Model Inconsistency**: User, ride, and driver models may not align across the different backend implementations.
-- **Overwrite Risk**: Importing driver/admin blindly could overwrite or conflict with the canonical structures in `frontend/` and `Backend/`.
+1. **Divergent Data Models**: The Driver Flutter App may expect a different API contract than what the Core Backend provides.
+   - *Mitigation*: Phase 2 will establish a Canonical API Contract. We will write adapters or update the Core Backend to satisfy required client fields without breaking the schema.
+2. **Realtime Disconnects**: Relying on WebSockets for ride status can lead to lost updates.
+   - *Mitigation*: Implement robust reconnection logic, token refresh, and HTTP fallback/sync for ride states in Phase 4 & 5.
+3. **Duplicate State Mutations**: Clients directly modifying ride status or wallet balance.
+   - *Mitigation*: All mutations must be backend-authoritative. Clients can only request transitions.
 
 ## Medium Risks
-- **Authentication Fragmentation**: Different apps using different auth strategies (JWT in NestJS, potentially different in Python).
-- **Socket/Realtime Divergence**: Dispatch engine relies on realtime updates, multiple socket endpoints will cause dispatch failures.
-
-## Mitigation Strategy
-- Enforce `Backend/` as the single Canonical NestJS Backend.
-- Audit and map APIs from duplicate backends into `Backend/` controllers/services before deprecating them.
-- Port Flutter UI for Driver app to use Canonical Backend APIs.
+1. **Authentication Silos**: Each imported app might have its own auth logic (Firebase vs JWT vs Custom).
+   - *Mitigation*: Unify all auth under Core Backend using standard JWT + Refresh Tokens.
+2. **Hardcoded Mock Data**: Next.js Admin and Flutter apps contain hardcoded UI states.
+   - *Mitigation*: Systematically hunt down and replace all mocks with actual API calls to Core Backend.
