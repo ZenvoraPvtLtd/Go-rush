@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  phone           String   @unique
+  password        String
+  profileImageUrl String?
+  otpCode         String?
+  otpExpiry       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  rides           Ride[]
+}
+
+model Driver {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  phone           String   @unique
+  password        String
+  vehicleDetails  String?
+  status          String   @default("OFFLINE") // ONLINE, OFFLINE, BUSY
+  lat             Float?
+  lng             Float?
+  profileImageUrl String?
+  licenseImageUrl String?
+  isKycApproved   Boolean  @default(false)
+  otpCode         String?
+  otpExpiry       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  rides           Ride[]
+  vehicleAssignments VehicleAssignment[]
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ride {
+  id                 String   @id @default(uuid())
+  riderId            String
+  driverId           String?
+  pickupLat          Float
+  pickupLng          Float
+  dropoffLat         Float
+  dropoffLng         Float
+  status             String   @default("REQUESTED") // REQUESTED, SEARCHING, ACCEPTED, IN_PROGRESS, COMPLETED, CANCELLED
+  fare               Float?
+  paymentStatus      String   @default("PENDING") // PENDING, PAID, FAILED
+  paymentId          String?
+  cancellationReason String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  
+  rider              User     @relation(fields: [riderId], references: [id])
+  driver             Driver?  @relation(fields: [driverId], references: [id])
+}
+
+model AnalyticsEvent {
+  id            String   @id @default(uuid())
+  eventId       String   @unique
+  eventType     String
+  eventVersion  String   @default("1.0")
+  occurredAt    DateTime
+  publishedAt   DateTime @default(now())
+  producer      String
+  aggregateType String
+  aggregateId   String
+  payload       Json
+  metadata      Json?
+}
+
+model Vehicle {
+  id                 String   @id @default(uuid())
+  partnerId          String?  // Optional reference to a Partner if implemented
+  registrationNumber String   @unique
+  make               String
+  model              String
+  manufacturingYear  Int?
+  fuelType           String?
+  status             String   @default("ACTIVE") // ACTIVE, INACTIVE, MAINTENANCE, SUSPENDED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  assignments        VehicleAssignment[]
+  inspections        VehicleInspection[]
+  maintenanceRecords MaintenanceRecord[]
+}
+
+model VehicleAssignment {
+  id        String   @id @default(uuid())
+  vehicleId String
+  driverId  String
+  status    String   @default("ACTIVE") // ACTIVE, ENDED
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id])
+
+  // Business Rule: Enforce one active assignment per driver/vehicle in backend logic.
+}
+
+model Zone {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VehicleInspection {
+  id             String   @id @default(uuid())
+  vehicleId      String
+  inspectionType String
+  status         String   @default("PENDING") // PASSED, FAILED, EXPIRED, PENDING
+  performedAt    DateTime?
+  expiresAt      DateTime?
+  performedBy    String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model MaintenanceRecord {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  description String
+  performedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model OperationalRestriction {
+  id          String   @id @default(uuid())
+  targetType  String   // DRIVER, VEHICLE, ZONE
+  targetId    String
+  reason      String
+  status      String   @default("ACTIVE") // ACTIVE, REVOKED
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model FleetAuditEvent {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  targetId  String
+  metadata  Json?
+  createdAt DateTime @default(now())
+}

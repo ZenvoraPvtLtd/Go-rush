@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+/* 
+  Yahan hum apne GoRush project ke custom colors define kar rahe hain. 
+  Iske baad hum inko Tailwind classes jaise 'bg-brand' ya 'text-charcoal' bankar use kar payenge.
+*/
+@theme inline {
+  --color-brand: #E85D04;        /* Burnt Orange */
+  --color-brand-hover: #CC5204;  /* Slightly darker for hover effects */
+  --color-charcoal: #222222;     /* Dark Charcoal */
+  --color-charcoal-light: #333333; /* Lighter Charcoal for cards/borders */
+  
+  --color-background: #F8F9FA;   /* Very light gray for overall app background */
+  --color-foreground: #222222;   /* Text color (Charcoal) */
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

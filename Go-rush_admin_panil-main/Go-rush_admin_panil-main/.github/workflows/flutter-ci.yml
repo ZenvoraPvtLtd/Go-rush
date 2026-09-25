@@ -1,0 +1,58 @@
+name: GoRush Flutter CI
+
+on:
+  push:
+    branches: [ main, staging ]
+  pull_request:
+    branches: [ main, staging ]
+
+jobs:
+  customer-validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./customer/frontend
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Analyze
+      run: flutter analyze
+
+    - name: Test
+      run: flutter test
+
+  build-apk:
+    needs: customer-validate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./customer/frontend
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Install Dependencies
+      run: flutter pub get
+
+    - name: Build Android APK
+      run: flutter build apk --debug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: gorush-customer-app
+        path: customer/frontend/build/app/outputs/flutter-apk/app-debug.apk
