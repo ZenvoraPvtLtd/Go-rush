@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
 export class OperationsService {
@@ -26,7 +26,7 @@ export class OperationsService {
 
   async assignVehicle(vehicleId: string, driverId: string, adminId: string) {
     // 1. Transaction to prevent concurrent invalid assignments (Business Invariant: One-Driver-One-Vehicle)
-    return this.prisma.$transaction(async (tx) => {
+    return this.prisma.$transaction(async (tx: any) => {
       // Check if driver is already assigned to a vehicle
       const existingDriverAssignment = await tx.vehicleAssignment.findFirst({
         where: { driverId, status: 'ACTIVE' },

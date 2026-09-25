@@ -13,7 +13,7 @@ export class DriversController {
 
   @Post(':id/kyc')
   @UseInterceptors(FileInterceptor('file'))
-  uploadKyc(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
+  uploadKyc(@Param('id') id: string, @UploadedFile() file: any) {
     // In a real app, save 'file' to AWS S3 or a local folder.
     // For now, we simulate saving the path to DB.
     const fileUrl = `/uploads/${file.originalname}`;
