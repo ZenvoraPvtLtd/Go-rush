@@ -40,6 +40,7 @@ model Driver {
   updatedAt          DateTime            @updatedAt
   rides              Ride[]
   vehicleAssignments VehicleAssignment[]
+  offers             DispatchOffer[]
 }
 
 model Admin {
@@ -67,9 +68,10 @@ model Ride {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  rider      User        @relation(fields: [riderId], references: [id])
-  driver     Driver?     @relation(fields: [driverId], references: [id])
+  rider      User            @relation(fields: [riderId], references: [id])
+  driver     Driver?         @relation(fields: [driverId], references: [id])
   rideAudits RideAudit[]
+  offers     DispatchOffer[]
 }
 
 model AnalyticsEvent {
@@ -196,4 +198,24 @@ model RideAudit {
   createdAt     DateTime @default(now())
 
   ride Ride @relation(fields: [rideId], references: [id])
+}
+
+model DispatchOffer {
+  id              String    @id @default(uuid())
+  rideId          String
+  driverId        String
+  status          String    @default("OFFERED") // OFFERED, ACCEPTED, REJECTED, EXPIRED, CANCELLED
+  attemptNumber   Int       @default(1)
+  rejectionReason String?
+  createdAt       DateTime  @default(now())
+  expiresAt       DateTime
+  respondedAt     DateTime?
+  updatedAt       DateTime  @updatedAt
+
+  ride   Ride   @relation(fields: [rideId], references: [id])
+  driver Driver @relation(fields: [driverId], references: [id])
+
+  // Optional: A driver shouldn't get the exact same ride twice unless it's a new attempt
+  // But a simple constraint: 
+  @@unique([rideId, driverId, attemptNumber])
 }
