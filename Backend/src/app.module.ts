@@ -15,6 +15,8 @@ import { AdminModule } from './admin/admin.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
 import { OperationsModule } from './operations/operations.module.js';
+import { PricingModule } from './pricing/pricing.module.js';
+import { QuotesModule } from './quotes/quotes.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -37,6 +39,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     PaymentsModule,
     AnalyticsModule,
     OperationsModule,
+    PricingModule,
+    QuotesModule,
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
     ObserveModule.forRoot({
