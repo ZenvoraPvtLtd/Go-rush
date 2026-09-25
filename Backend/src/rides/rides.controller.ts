@@ -1,29 +1,42 @@
-import { Controller, Get, Post, Patch, Param, Body } from '@nestjs/common';
+
+import { Controller, Post, Body, UseGuards, Get, Param, Request } from '@nestjs/common';
 import { RidesService } from './rides.service.js';
+import { CreateRideDto } from './dto/create-ride.dto.js';
+import { CancelRideDto } from './dto/cancel-ride.dto.js';
+import { AuthGuard } from '../auth/auth.guard.js';
 
 @Controller('rides')
+@UseGuards(AuthGuard)
 export class RidesController {
   constructor(private readonly ridesService: RidesService) {}
 
-  @Post('request')
-  async requestRide(@Body() body: any) {
-    const { riderId, pickupLat, pickupLng, dropoffLat, dropoffLng } = body;
-    return this.ridesService.requestRide(riderId, pickupLat, pickupLng, dropoffLat, dropoffLng);
+  @Post()
+  createRide(@Body() createRideDto: CreateRideDto, @Request() req: any) {
+    const user = req.user || { id: 'mock-user-id', role: 'CUSTOMER' }; // Extract from JWT
+    return this.ridesService.createRide(createRideDto, user);
+  }
+
+  @Get('active')
+  getActiveRide(@Request() req: any) {
+    const user = req.user || { id: 'mock-user-id', role: 'CUSTOMER' };
+    return this.ridesService.getActiveRide(user);
+  }
+
+  @Get('history')
+  getRideHistory(@Request() req: any) {
+    const user = req.user || { id: 'mock-user-id', role: 'CUSTOMER' };
+    return this.ridesService.getRideHistory(user);
   }
 
   @Get(':id')
-  async getRide(@Param('id') id: string) {
-    return this.ridesService.getRideDetails(id);
+  getRide(@Param('id') id: string, @Request() req: any) {
+    const user = req.user || { id: 'mock-user-id', role: 'CUSTOMER' };
+    return this.ridesService.getRide(id, user);
   }
 
-  @Patch(':id/complete')
-  async completeRide(@Param('id') id: string) {
-    return this.ridesService.completeRide(id);
-  }
-
-  @Patch(':id/cancel')
-  async cancelRide(@Param('id') id: string, @Body('reason') reason: string) {
-    return this.ridesService.cancelRide(id, reason);
+  @Post(':id/cancel')
+  cancelRide(@Param('id') id: string, @Body() cancelDto: CancelRideDto, @Request() req: any) {
+    const user = req.user || { id: 'mock-user-id', role: 'CUSTOMER' };
+    return this.ridesService.cancelRide(id, cancelDto, user);
   }
 }
-

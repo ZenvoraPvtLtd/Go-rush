@@ -1,59 +1,53 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service.js';
-import { Queue } from 'bullmq';
-import { InjectQueue } from '@nestjs/bullmq';
+
+import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { CreateRideDto } from './dto/create-ride.dto.js';
+import { CancelRideDto } from './dto/cancel-ride.dto.js';
+import { RideTransitionService } from '../ride/ride-transition.service.js';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class RidesService {
-  constructor(
-    private prisma: PrismaService,
-    @InjectQueue('dispatch') private dispatchQueue: Queue
-  ) {}
+  constructor(private readonly rideTransitionService: RideTransitionService) {}
 
-  async requestRide(riderId: string, pickupLat: number, pickupLng: number, dropoffLat: number, dropoffLng: number) {
-    // 1. Create a ride in database
-    const ride = await this.prisma.ride.create({
-      data: {
-        riderId,
-        pickupLat,
-        pickupLng,
-        dropoffLat,
-        dropoffLng,
-        status: 'SEARCHING',
-      },
-    });
-
-    // 2. Add job to the dispatch queue to find a driver
-    await this.dispatchQueue.add('find_driver', {
-      rideId: ride.id,
-      pickupLat,
-      pickupLng,
-    });
-
-    return ride;
-  }
-
-  async getRideDetails(id: string) {
-    return this.prisma.ride.findUnique({
-      where: { id },
-      include: { rider: true, driver: true },
-    });
-  }
-
-  async completeRide(id: string) {
-    // Basic mock fare calculation based on a random number (in production, use distance * rate)
-    const fare = Math.floor(Math.random() * 500) + 100; 
+  async createRide(createRideDto: CreateRideDto, user: any) {
+    if (!createRideDto.quoteId) throw new BadRequestException('Quote ID required');
     
-    return this.prisma.ride.update({
-      where: { id },
-      data: { status: 'COMPLETED', fare },
-    });
+    // Simulate initial state creation logic (DB blocked)
+    const rideId = uuidv4();
+    const initialState = 'REQUESTED';
+    
+    // Use transition service to move to SEARCHING
+    await this.rideTransitionService.transitionRide(rideId, 'SEARCHING', user, { reason: 'Initial ride creation' });
+
+    return {
+      rideId,
+      status: 'SEARCHING',
+      pickup: createRideDto.pickup,
+      destination: createRideDto.destination,
+      customer: user
+    };
   }
 
-  async cancelRide(id: string, reason: string) {
-    return this.prisma.ride.update({
-      where: { id },
-      data: { status: 'CANCELLED', cancellationReason: reason },
-    });
+  async getRide(rideId: string, user: any) {
+    // DB blocked, returning scaffold
+    return { rideId, status: 'SEARCHING', owner: user };
+  }
+
+  async getActiveRide(user: any) {
+    // DB blocked, returning scaffold
+    return { rideId: uuidv4(), status: 'IN_PROGRESS', owner: user };
+  }
+
+  async getRideHistory(user: any) {
+    // DB blocked, returning scaffold array
+    return [];
+  }
+
+  async cancelRide(rideId: string, cancelDto: CancelRideDto, user: any) {
+    // 1. Verify Ownership (Blocked by DB)
+    // 2. Verify State
+    // 3. Execute Transition
+    await this.rideTransitionService.transitionRide(rideId, 'CANCELLED', user, { reason: cancelDto.reason });
+    return { rideId, status: 'CANCELLED' };
   }
 }

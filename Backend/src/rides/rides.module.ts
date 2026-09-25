@@ -1,16 +1,12 @@
+
 import { Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bullmq';
 import { RidesService } from './rides.service.js';
 import { RidesController } from './rides.controller.js';
-import { DispatchProcessor } from './dispatch.processor.js';
+import { RideTransitionService } from '../ride/ride-transition.service.js';
 
 @Module({
-  imports: [
-    BullModule.registerQueue({
-      name: 'dispatch',
-    }),
-  ],
+  providers: [RidesService, RideTransitionService],
   controllers: [RidesController],
-  providers: [RidesService, DispatchProcessor],
+  exports: [RidesService],
 })
 export class RidesModule {}
