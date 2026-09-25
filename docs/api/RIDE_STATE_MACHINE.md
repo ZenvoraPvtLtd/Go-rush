@@ -1,22 +1,34 @@
-# Ride State Machine
+# Canonical Ride State Machine
 
-## Canonical States
-The GoRush Core Backend is the authoritative source for the ride state. The frontend clients must sync with these states via WebSocket or polling.
+## States
+- REQUESTED
+- SEARCHING
+- OFFERED
+- ASSIGNED
+- DRIVER_EN_ROUTE
+- DRIVER_ARRIVED
+- STARTED
+- IN_PROGRESS
+- COMPLETED
+- CANCELLED
+- NO_DRIVER
+- DISPUTED
 
-1. **REQUESTED**: Customer has initiated a ride request.
-2. **SEARCHING**: Dispatch engine is looking for nearby drivers.
-3. **OFFERED**: Ride is currently offered to a specific driver (awaiting accept/reject).
-4. **ASSIGNED**: A driver has accepted the ride.
-5. **DRIVER_EN_ROUTE**: Driver is navigating to the pickup location.
-6. **DRIVER_ARRIVED**: Driver has reached the pickup location and is waiting for the customer.
-7. **STARTED**: Customer is in the vehicle and the trip has begun.
-8. **IN_PROGRESS**: The ride is ongoing towards the destination.
-9. **COMPLETED**: The ride has reached the destination and payment is processed.
+## Transition Matrix
+- REQUESTED -> SEARCHING
+- SEARCHING -> OFFERED, NO_DRIVER, CANCELLED
+- OFFERED -> ASSIGNED, SEARCHING, CANCELLED, NO_DRIVER
+- ASSIGNED -> DRIVER_EN_ROUTE, CANCELLED, DISPUTED
+- DRIVER_EN_ROUTE -> DRIVER_ARRIVED, CANCELLED, DISPUTED
+- DRIVER_ARRIVED -> STARTED, CANCELLED, DISPUTED
+- STARTED -> IN_PROGRESS
+- IN_PROGRESS -> COMPLETED, DISPUTED
 
-## Alternative / Terminal States
-- **CANCELLED**: The ride was cancelled by the customer or driver before completion.
-- **NO_DRIVER**: Dispatch engine failed to find a driver within the timeout period.
-- **DISPUTED**: The ride ended with a dispute (e.g., payment failure, safety issue).
+## Actor Permissions
+- **CUSTOMER**: Can request ride, cancel own ride (pre-dispatch).
+- **DRIVER**: Can accept/reject offers, signal en-route, arrived, start (OTP), complete.
+- **ADMIN**: Authorized operational interventions.
+- **SYSTEM**: Dispatch timeouts, rematch.
 
-## State Transitions
-Transitions are strictly enforced by the backend. Invalid state transitions (e.g., from `REQUESTED` directly to `COMPLETED`) will be rejected by the API.
+## Backend Authority
+Clients cannot set ride status directly. All mutations go through the `RideTransitionService`, which enforces atomic database updates, timestamps, idempotency, and WebSocket `ride.status.changed` event emissions.
