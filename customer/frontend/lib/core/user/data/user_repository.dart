@@ -33,7 +33,7 @@ class HttpUserRepository implements UserRepository {
   @override
   Future<UserProfileModel> getProfile() async {
     try {
-      final token = _activeUser?.userId ?? 'cust_123';
+      final token = _activeUser?.userId ?? '';
       final res = await _dio.get(
         '/user/profile',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
@@ -52,7 +52,7 @@ class HttpUserRepository implements UserRepository {
   @override
   Future<UserProfileModel> updateProfile(Map<String, dynamic> data) async {
     try {
-      final token = _activeUser?.userId ?? 'cust_123';
+      final token = _activeUser?.userId ?? '';
       final res = await _dio.patch(
         '/user/profile',
         data: data,
@@ -73,7 +73,7 @@ class HttpUserRepository implements UserRepository {
     try {
       final res = await _dio.get(
         '/user/notifications',
-        options: Options(headers: {'Authorization': 'Bearer mock_access_token'}),
+        options: Options(headers: {'Authorization': 'Bearer '}),
       );
       return NotificationSettingsModel.fromJson(res.data as Map<String, dynamic>);
     } catch (_) {
@@ -87,7 +87,7 @@ class HttpUserRepository implements UserRepository {
       final res = await _dio.patch(
         '/user/notifications',
         data: settings,
-        options: Options(headers: {'Authorization': 'Bearer mock_access_token'}),
+        options: Options(headers: {'Authorization': 'Bearer '}),
       );
       return NotificationSettingsModel.fromJson(res.data as Map<String, dynamic>);
     } catch (_) {
@@ -100,7 +100,7 @@ class HttpUserRepository implements UserRepository {
     try {
       final res = await _dio.get(
         '/user/privacy',
-        options: Options(headers: {'Authorization': 'Bearer mock_access_token'}),
+        options: Options(headers: {'Authorization': 'Bearer '}),
       );
       return PrivacySettingsModel.fromJson(res.data as Map<String, dynamic>);
     } catch (_) {
@@ -114,7 +114,7 @@ class HttpUserRepository implements UserRepository {
       final res = await _dio.patch(
         '/user/privacy',
         data: settings,
-        options: Options(headers: {'Authorization': 'Bearer mock_access_token'}),
+        options: Options(headers: {'Authorization': 'Bearer '}),
       );
       return PrivacySettingsModel.fromJson(res.data as Map<String, dynamic>);
     } catch (_) {
@@ -128,7 +128,7 @@ class HttpUserRepository implements UserRepository {
       final res = await _dio.delete(
         '/user/account',
         data: {'reason': reason, 'details': details},
-        options: Options(headers: {'Authorization': 'Bearer mock_access_token'}),
+        options: Options(headers: {'Authorization': 'Bearer '}),
       );
       return res.data as Map<String, dynamic>;
     } catch (_) {
@@ -141,7 +141,7 @@ class HttpUserRepository implements UserRepository {
     try {
       final res = await _dio.get(
         '/user/support/faqs',
-        options: Options(headers: {'Authorization': 'Bearer mock_access_token'}),
+        options: Options(headers: {'Authorization': 'Bearer '}),
       );
       final list = res.data as List;
       return list.map((e) => FaqCategory.fromJson(e as Map<String, dynamic>)).toList();

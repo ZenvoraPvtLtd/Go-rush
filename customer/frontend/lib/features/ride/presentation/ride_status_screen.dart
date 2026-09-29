@@ -76,7 +76,7 @@ class _RideStatusScreenState extends State<RideStatusScreen> {
   }
 
   void _startLiveTracking() {
-    widget.realtimeService.connect('mock_token');
+    widget.realtimeService.connect('');
     widget.realtimeService.subscribeToRide(_ride.rideId);
 
     _locationSub = widget.realtimeService.driverLocationStream.listen((location) {
