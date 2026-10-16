@@ -1,20 +1,25 @@
 
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
+export class LocationDto {
+  lat: number;
+  lng: number;
+  address?: string;
+}
+
 export class CreateRideDto {
   @IsString()
   @IsNotEmpty()
   quoteId: string;
 
-  @IsString()
   @IsNotEmpty()
-  pickup: string;
+  pickup: LocationDto;
 
-  @IsString()
   @IsNotEmpty()
-  destination: string;
+  destination: LocationDto;
 
   @IsString()
   @IsOptional()
   vehicleType?: string;
 }
+

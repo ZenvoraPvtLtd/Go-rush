@@ -1,8 +1,9 @@
 # Node dependencies & build artifacts
-node_modules/
-dist/
-build/
+**/node_modules/
+**/dist/
+**/build/
 *.tsbuildinfo
+package-lock.json.bak
 
 # Database files
 customer/backend/data/
@@ -10,22 +11,25 @@ customer/backend/data/
 *.db
 
 # Flutter / Dart
-.dart_tool/
-.pub-cache/
-.pub/
-customer/frontend/build/
-customer/frontend/.dart_tool/
-driver/build/
-driver/.dart_tool/
-driver/.flutter-plugins
-driver/.flutter-plugins-dependencies
+**/.dart_tool/
+**/.pub-cache/
+**/.pub/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
 **/android/local.properties
 **/ephemeral/
+*.apk
+*.aab
+
+# Environment & Secrets
+.env
+*.env.local
 
 # IDE & OS
 .idea/
 .vscode/
 *.swp
 *.swo
+*.log
 .DS_Store
 Thumbs.db

@@ -7,8 +7,18 @@ class ApiConfig {
     if (envUrl.isNotEmpty) {
       return envUrl;
     }
-    // Android emulator/device uses 10.0.2.2 to connect to host's localhost:3001
-    throw Exception('API_URL environment variable is required in production');
+    // Android emulator connects to host via 10.0.2.2; web and desktop use localhost
+    if (kIsWeb) {
+      return 'http://localhost:3001';
+    }
+    try {
+      if (Platform.isAndroid) {
+        return 'http://10.0.2.2:3001';
+      }
+    } catch (_) {
+      // Fallback if platform inspection fails
+    }
+    return 'http://localhost:3001';
   }
 }
 

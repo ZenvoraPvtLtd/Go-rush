@@ -5,7 +5,7 @@ import { RideTransitionService } from '../ride/ride-transition.service.js';
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { v4 as uuidv4 } from 'uuid';
 
-describe('RidesService Integration & Concurrency Certification', () => {
+describe.skipIf(!process.env.DATABASE_URL)('RidesService Integration & Concurrency Certification', () => {
   let ridesService: RidesService;
   let rideTransitionService: RideTransitionService;
   let prisma: PrismaService;

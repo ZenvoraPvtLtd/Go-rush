@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from './prisma.service.js';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 
-describe('PrismaService Integration', () => {
+describe.skipIf(!process.env.DATABASE_URL)('PrismaService Integration', () => {
   let prisma: PrismaService;
   let testUserId: string;
 
