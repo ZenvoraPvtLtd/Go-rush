@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1085597287956",
+    "project_id": "go-rush-f6d5b",
+    "storage_bucket": "go-rush-f6d5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1085597287956:android:d25e43c4f5d7d797970901",
+        "android_client_info": {
+          "package_name": "com.gorush.driver.gorush_driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYXFg-GCre5rzciqvdfhbLfNkYKoePOJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- GoRush splash background: deep navy matches Flutter SplashScreen exactly -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Deep navy #030B1C — same as Flutter splash backgroundColor -->
+    <item android:drawable="@color/splash_bg" />
+</layer-list>

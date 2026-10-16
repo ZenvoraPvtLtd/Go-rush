@@ -15,6 +15,12 @@ customer/backend/data/
 .pub/
 customer/frontend/build/
 customer/frontend/.dart_tool/
+driver/build/
+driver/.dart_tool/
+driver/.flutter-plugins
+driver/.flutter-plugins-dependencies
+**/android/local.properties
+**/ephemeral/
 
 # IDE & OS
 .idea/
